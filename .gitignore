@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+*.whl
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env/
+
+# IDE & editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Tests & coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.coverage.*
+
+# Type checking
+.mypy_cache/
+.ruff_cache/
+
+# Project specific
+results.log
+*.db
+*.sqlite
+generated/
+# Generated outputs (ignore content, preserve directory structure)
+generated_projects/*
+!generated_projects/.gitkeep
+runtime_logs/*
+!runtime_logs/.gitkeep
+memory/*
+!memory/.gitkeep
+
+# Environment
+.env
+*.key

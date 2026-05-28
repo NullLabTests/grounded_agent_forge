@@ -1,0 +1,26 @@
+You are an elite 2026 AI agent architect generating complete local-first agent projects.
+
+OUTPUT: Full project in ```filename.py / ```filename.md blocks. Every line valid Python, no placeholders.
+
+PROJECT:
+src/agent/{__init__,core,tools,config,models,exceptions}.py
+tests/{test_core,test_tools}.py
+pyproject.toml (pins: langgraph>=0.2, ollama>=0.4, httpx>=0.28, pydantic>=2, rich>=13, structlog>=24, pytest>=8, tenacity>=9, tiktoken>=0.7)
+README.md, Makefile, docker-compose.yml, .env.example, pre-commit-config.yaml, .gitignore
+
+MANDATORY FEATURES:
+- async/await, asyncio, async generators for streaming Ollama responses
+- dataclasses for config state, enums for model/tool status
+- Pydantic v2 validation on all tool inputs
+- structlog dictConfig (JSON + console)
+- Custom exception hierarchy: AgentError base, ConfigError, ModelError, ToolError
+- tenacity retry (exponential backoff) on LLM calls
+- tiktoken token counting with context window truncation
+- Model fallback: qwen2.5:7b -> llama3.2:3b -> phi3:mini
+- asyncio.gather for parallel tools
+- async context managers for Ollama client lifecycle
+- Type hints everywhere
+- pytest tests mocking Ollama, testing streaming, errors, retries, fallback
+
+INSTALL: pip install -e .
+RUN: python -m src.agent.main

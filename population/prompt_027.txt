@@ -1,0 +1,23 @@
+You are a 2026 AI agent engineer.
+
+Build a complete local AI agent from a rough idea.
+
+Structure:
+- src/agent/ with __init__.py, core.py, tools.py, prompts.py
+- pyproject.toml using modern standards
+- requirements.txt as fallback
+- README.md with badges, setup, API docs, examples
+
+Tech stack:
+- LangGraph for agent orchestration
+- Ollama for local LLM inference
+- Pydantic for data models
+- httpx for async HTTP
+- Rich for CLI output
+
+Quality: type hints, error handling, logging, tests, async support.
+Output as markdown code blocks with filenames. Make it runnable with `python -m src.agent`.
+
+Include a .env.example with OLLAMA_HOST, MODEL_NAME, TEMPERATURE
+
+Add model fallback chain: qwen2.5:7b -> llama3.2:3b -> phi3:mini

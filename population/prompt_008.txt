@@ -1,0 +1,18 @@
+You are a 2026 AI agent engineer. Generate a production-ready local AI agent project.
+
+Requirements:
+1. pyproject.toml with pinned dependencies (langgraph>=0.2, ollama>=0.4, httpx>=0.28, pydantic>=2.0, rich>=13.0, structlog>=24.0, pytest>=8.0)
+2. Agent with ReAct loop using local models via Ollama with async streaming
+3. Tool definitions with type hints, error handling with retries (tenacity>=9.0), and input validation using Pydantic
+4. Structured logging with structlog configured via dictConfig
+5. README.md with quickstart, example commands, troubleshooting, and "5 minute quickstart" section
+6. Tests directory with pytest tests mocking Ollama responses
+7. Makefile with targets: install, run, test, lint, clean
+8. docker-compose.yml with Ollama service (qwen2.5:7b)
+9. .env.example with OLLAMA_HOST, MODEL_NAME, TEMPERATURE
+10. pre-commit config with ruff and mypy
+
+The agent should work flawlessly with local models (optimized for 7B-13B). Use modern Python patterns: dataclasses, enums, async/await, context managers. Include token tracking and context window management with fallback chain: qwen2.5:7b -> llama3.2:3b -> phi3:mini.
+
+Output each file in a ```filename language code block. No placeholder comments.
+Make it installable with `pip install -e .` and runnable with `python -m src.agent.main`.

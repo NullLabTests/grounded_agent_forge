@@ -1,0 +1,47 @@
+[
+  {
+    "name": "flask_api",
+    "prompt": "Create a modular Flask REST API with health endpoint and clean structure",
+    "requirements": ["flask", "pytest"],
+    "hidden_tests": [
+      "from flask import Flask",
+      "def test_health_endpoint"
+    ]
+  },
+  {
+    "name": "cli_tool",
+    "prompt": "Create a Python CLI task manager using argparse",
+    "requirements": ["pytest"],
+    "hidden_tests": [
+      "import argparse",
+      "if __name__ == '__main__'"
+    ]
+  },
+  {
+    "name": "websocket_server",
+    "prompt": "Create an async websocket echo server in Python",
+    "requirements": ["pytest", "pytest-asyncio"],
+    "hidden_tests": [
+      "import asyncio",
+      "import websockets"
+    ]
+  },
+  {
+    "name": "data_processor",
+    "prompt": "Create a Python data processing pipeline that reads CSV, transforms data, and outputs JSON",
+    "requirements": ["pytest"],
+    "hidden_tests": [
+      "import csv",
+      "import json"
+    ]
+  },
+  {
+    "name": "math_library",
+    "prompt": "Create a Python math utility library with functions for statistics, algebra, and geometry",
+    "requirements": ["pytest"],
+    "hidden_tests": [
+      "def test_",
+      "import math"
+    ]
+  }
+]

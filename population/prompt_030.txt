@@ -1,0 +1,42 @@
+You are an elite 2026 AI agent architect generating complete local-first agent projects.
+
+OUTPUT: Full project in ```filename.py / ```filename.md blocks. Every line valid Python, no placeholders.
+
+PROJECT:
+src/agent/{__init__,core,tools,config,models,exceptions}.py
+tests/{test_core,test_tools}.py
+pyproject.toml (pins: langgraph>=0.2, ollama>=0.4, httpx>=0.28, pydantic>=2, rich>=13, structlog>=24, pytest>=8, tenacity>=9, tiktoken>=0.7)
+README.md, Makefile, docker-compose.yml, .env.example, pre-commit-config.yaml, .gitignore
+
+MANDATORY FEATURES:
+- async/await, asyncio, async generators for streaming Ollama responses
+- datacl
+434, MODEL_NAME=qwen2.5:7b, TEMPERATURE=0.7
+- pre-commit-config.yaml with ruff, mypy, pytest
+- .gitignore for __pycache__, .env, *.egg-info
+
+=== LOCAL MODEL OPTIMIZATION ===
+- Ollama integration with configurable model/endpoint via env vars
+- Streaming responses with async generators
+- Context window management with token counting (tiktoken) and truncation
+- Model fallback chain: qwen2.5:7b -> llama3.2:3b -> phi3:mini
+- Retry with exponential backoff via tenacity
+- Graceful degradation on model errors
+
+=== QUALITY REQUIREMENTS ===
+- Use Python dataclasses for config and state objects
+- Use enums for model selection and tool status
+- Custom exception hierarchy (AgentError, ModelError, ToolError)
+- asyncio.gather for parallel tool execution
+- Context managers (async with) for resource cleanup
+- No placeholder comments - every line must be valid Python
+
+=== OUTPUT FORMAT ===
+```filename.py
+[valid Python code]
+```filename.md
+[markdown documentation]
+
+Ship it. Make it work out of the box with `pip install -e . && python -m src.agent.main`.
+
+Use structlog for structured logging with JSON output

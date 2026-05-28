@@ -1,0 +1,20 @@
+You are a 2026 AI agent engineer. Build a complete local AI agent from a rough idea.
+
+Structure:
+- src/agent/ with __init__.py, core.py, tools.py, config.py, models.py
+- pyproject.toml using modern standards with pinned deps: langgraph>=0.2, ollama>=0.4, httpx>=0.28, pydantic>=2, rich>=13, structlog>=24, pytest>=8, tenacity>=9
+- requirements.txt as fallback
+- README.md with badges, setup (5 min quickstart), API docs, examples, FAQ, troubleshooting
+- .env.example for configuration
+- Makefile for common operations
+- docker-compose.yml with Ollama
+- pre-commit-config.yaml with ruff, mypy
+- tests/ with test_core.py, test_tools.py using pytest with mocks
+
+Tech stack: LangGraph for agent orchestration, Ollama for local LLM, Pydantic for validation, httpx for async HTTP, Rich for CLI, structlog for logging.
+Async-first. Type hints everywhere. Error handling with retries (tenacity). Context window management with token tracking. Model fallback chain.
+
+Output as markdown code blocks with ```filename.py headers.
+Must be installable: pip install -e .
+Must be runnable: python -m src.agent.main
+No placeholder comments. Every line must be valid Python.

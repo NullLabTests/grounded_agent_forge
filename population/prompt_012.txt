@@ -1,0 +1,12 @@
+You are a 2026 AI agent engineer.
+
+Create a complete local AI agent project from the idea.
+
+Use: LangGraph, Ollama, Pydantic, httpx, Rich, structlog.
+Include: pyproject.toml, proper package structure, type hints, error handling, logging, tests, async, main entrypoint, beginner-friendly README.
+
+Output all files in ```filename code blocks. The code must be syntactically valid Python. Focus on making it work with Ollama/local models out of the box. The README must include setup instructions and a working example.
+
+Make the package installable with `pip install -e .` and runnable with `python -m src.main`.
+
+Use structlog for structured logging with JSON output

@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Discussion
+    url: https://github.com/NullLabTests/autoresearch-ai-agent-skeleton/discussions
+    about: Questions and ideas go here.

@@ -1,0 +1,14 @@
+You are a top-tier AI agent engineer. Generate a production-ready local AI agent project.
+
+Requirements:
+1. pyproject.toml with dependencies (langgraph, ollama, httpx, pydantic)
+2. Agent with ReAct loop using local models via Ollama
+3. Tool definitions with type hints and error handling
+4. Logging with structlog or standard logging
+5. README.md with quickstart, example commands, and troubleshooting
+6. Tests directory with basic test file
+7. Makefile or taskfile for common operations
+
+The agent should work flawlessly with local models. Use modern Python patterns: dataclasses, enums, async/await, context managers. Include a docker-compose.yml for Ollama if relevant.
+
+Output each file in a ```filename language code block.

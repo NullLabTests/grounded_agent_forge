@@ -1,0 +1,98 @@
+You are a 2026 AI agent engineer.
+
+Create a complete, runnable personal AI agent project from the idea.
+Use modern Py
+treaming responses with chunk/delta event delivery
+
+=== LOCAL MODEL OPTIMIZATION ===
+- Ollama integration via env vars and Pydantic BaseSettings with keep_alive, num_ctx configuration
+- Vision/multimodal model support for image understanding tasks alongside text
+- mirostat sampling, top_p, top_k temperature configuration for fine-grained model control
+- Streaming responses with async generators, SSE events, websocket fallback, chunk/delta token delivery
+- Context window management with tiktoken tokenizer for token counting and tracking per request, sliding window truncation
+- Model fallback chain with auto-detection and healthcheck: qwen2.5:7b -> llama3.2:3b -> phi3:mini -> mistral:7b
+- Retry with exponential backoff via tenacity, circuit breaker after N failures, per-model timeouts, jitter
+- Graceful degradation with custom exceptions, informative messages, graceful shutdown on SIGTERM/SIGINT
+- asyncio.Semaphore for concurrent request rate limiting, connection pooling for Ollama HTTP
+- Session/conversation memory with multi-turn state management, database persistence (sqlite/postgres via SQLAlchemy)
+- Tool calling/function calling with typed definitions matching OpenAI-compatible tool format, factory pattern for tool creation
+- asyncio.gather with return_exceptions=True for parallel/concurrent tool execution, batch processing
+- RAG/retrieval with embedding/vector storage for semantic memory, property-based cache invalidation
+- Self-critique and feedback loops for response quality improvement, ablation study support for prompt experimentation
+- Background task/worker system for long-running operations with supervisor management
+- Pipeline/chain of responsibility pattern for tool execution with observer pattern for event notifications
+
+=== SECURITY & AUTH ===
+- API key authentication for external access, secrets management via environment encryption
+- Input sanitization for all user-provided data, encryption at rest for sensitive data
+- Auth middleware/interceptor for request validation, RateLimitError for abuse prevention
+- SECURITY.md with vulnerability reporting policy, encryption standards
+
+=== TESTING STRATEGY ===
+- Unit tests with pytest, fixtures, mocking (unittest.mock) for Ollama and external services
+- Integration tests for database (SQLAlchemy/alembic migrations), middleware, auth, pipelines
+- End-to-end tests for full agent workflows with mocked model responses
+- Property-based tests with hypothesis for edge case discovery
+- Snapshot tests for deterministic output comparison
+- Coverage threshold 90% minimum, tracked in CI with --cov-report=term-missing
+- Mock and fixture patterns for all external dependencies
+
+=== CI/CD & DEVOPS ===
+- GitHub Actions CI: ruff lint, mypy typecheck, pytest with coverage (--cov-fail-under=90), dependabot/renovate for dep updates
+- Makefile with .PHONY targets: install, run, test, lint, typecheck, format, clean, docker-up, docker-down, coverage, ci, migration
+- pre-commit: ruff (lint+format), mypy (strict), pytest, yaml/json validation, editorconfig, end-of-file, trailing-whitespace
+- Docker: multi-stage Dockerfile with dockerignore, docker-compose with healthcheck/readiness/liveness probes, redis + postgres profiles
+- Systemd service unit with graceful shutdown (SIGTERM handler), supervisor alternative process management
+- Kubernetes/k8s manifests for container orchestration, readiness/liveness probes
+- Changelog with semantic versioning, CI-driven release process
+- Environment-specific config via hierarchical multi-env config (dev/staging/prod)
+- Observability: prometheus metrics endpoint, structured logging, distributed tracing, /health endpoint
+
+=== QUALITY REQUIREMENTS ===
+- Type hints on every function signature with strict mypy compliance
+- Docstrings on all public functions with Args/Returns/Raises sections
+- Async/await throughout with asyncio, async generators for streaming, background tasks
+- Python dataclasses (frozen=True) for config, state, and response objects
+- StrEnum for model selection, tool status, log levels, config environments
+- Custom exception hierarchy with RateLimitError, AuthError, ConfigError, etc.
+- asyncio contextvars for request-scoped context propagation
+- Middleware/interceptor pipeline for auth, logging, timing, tracing, safety
+- Event-driven architecture with observer pattern, callbacks, webhooks
+- Repository pattern for data access abstraction, strategy pattern for model/algorithm selection
+- Factory pattern for tool/component creation, pipeline/chain of responsibility for orchestration
+- Serialization (json/pickle) for cache persistence, state management, database storage
+- Cyclomatic complexity limits enforced by ruff
+- No placeholder comments, TODOs, FIXMEs — every line valid, runnable Python
+- import ordering: stdlib, third-party, local (alphabetical)
+- Async context managers for all resource lifecycle management
+- Graceful shutdown handlers for SIGTERM, SIGINT signals
+- Thread-safe design with locking for concurrent access, connection pooling
+- Code formatter (ruff format) with consistent style, editorconfig for IDE consistency
+
+=== INSTALL & RUN ===
+Install: pip install -e .
+Install dev: pip install -e ".[dev]"
+Run: python -m src.agent.main (runnable via python -m)
+CLI: src/agent/cli.py --model qwen2.5:7b --temperature 0.7 --keep-alive 5m --num-ctx 4096
+Test: pytest tests/ -v --cov=src.agent --cov-report=term-missing --cov-fail-under=90
+Database: alembic upgrade head
+Migration: alembic revision --autogenerate -m "description"
+Docker: docker compose up --build (with redis/postgres profiles)
+Health: curl http://localhost:8000/health (readiness/liveness probes)
+Metrics: http://localhost:8000/metrics (prometheus)
+Systemd: sudo systemctl start agent (graceful shutdown on stop)
+
+=== OUTPUT ===
+```filename.py
+```filename.md
+```filename.yaml
+```filename.yml
+```filename.toml
+```Dockerfile
+```.github/workflows/ci.yml
+```systemd/agent.service
+```CHANGELOG.md
+```SECURITY.md
+```.editorconfig
+
+Every file complete. No missing imports. No syntax errors. Production-ready with security, observability, and ops maturity.
