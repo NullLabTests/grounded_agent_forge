@@ -7,7 +7,8 @@ Instead of scoring prompts by keyword coverage alone, it:
 3. Runs pytest to verify test pass rates
 4. Lints with flake8 for code quality
 5. Analyzes structural complexity (function/class count)
-6. Returns a composite execution score
+6. Runs hidden benchmark tests for behavioral validation
+7. Returns a composite execution score
 
 This grounds the evolution in *real code quality* rather than
 just text matching.
@@ -18,7 +19,6 @@ import os
 import subprocess
 import json
 import sys
-import tempfile
 import time
 import shutil
 from pathlib import Path
@@ -27,6 +27,7 @@ from typing import Any
 
 CommandResult = dict[str, Any]
 Metrics = dict[str, Any]
+Benchmark = dict[str, Any]
 
 
 def run_command(cmd: str | list[str], cwd: str | None = None, timeout: int = 60, shell: bool = True) -> CommandResult:
@@ -112,13 +113,27 @@ def count_functions_and_classes(project_dir: str) -> dict[str, int]:
     return {"functions": functions, "classes": classes}
 
 
-def evaluate_project(project_dir: str, timeout: int = 30) -> Metrics:
+def install_hidden_tests(project_dir: str, benchmark: Benchmark | None) -> None:
+    """Copy hidden test files from benchmark definition into the project dir."""
+    if not benchmark or "hidden_test_files" not in benchmark:
+        return
+    project_path = Path(project_dir)
+    for filename, code in benchmark["hidden_test_files"].items():
+        (project_path / filename).write_text(code)
+
+
+def evaluate_project(project_dir: str, benchmark: Benchmark | None = None, timeout: int = 30) -> Metrics:
     """Run full execution-grounded evaluation on a generated project.
+
+    If a benchmark dict with hidden_test_files is provided, those test
+    files are installed before evaluation. Hidden test results contribute
+    a separate sub-score for behavioral validation.
 
     Returns a metrics dict with:
     - syntax: AST parse results
     - structure: function/class counts
-    - pytest: test execution results
+    - pytest: all test execution results
+    - hidden_tests: hidden benchmark test results (if benchmark provided)
     - lint: flake8 results
     - runtime: import execution results
     - final_score: composite execution score
@@ -126,11 +141,13 @@ def evaluate_project(project_dir: str, timeout: int = 30) -> Metrics:
     score: float = 0.0
     metrics: Metrics = {}
 
+    install_hidden_tests(project_dir, benchmark)
+
     syntax_result: dict[str, Any] = parse_syntax(project_dir)
     metrics["syntax"] = syntax_result
     if syntax_result["valid"]:
-        score += 20.0
-        metrics["syntax_score"] = 20.0
+        score += 15.0
+        metrics["syntax_score"] = 15.0
     else:
         metrics["syntax_score"] = 0.0
 
@@ -140,9 +157,9 @@ def evaluate_project(project_dir: str, timeout: int = 30) -> Metrics:
     structure: dict[str, int] = count_functions_and_classes(project_dir)
     metrics["structure"] = structure
     if structure["functions"] >= 1:
-        score += 5.0
+        score += 3.0
     if structure["classes"] >= 1:
-        score += 5.0
+        score += 3.0
 
     try:
         pytest_result: CommandResult = run_command(
@@ -150,10 +167,14 @@ def evaluate_project(project_dir: str, timeout: int = 30) -> Metrics:
             cwd=project_dir,
             timeout=timeout,
         )
-        metrics["pytest"] = pytest_result
+        metrics["pytest"] = {
+            "success": pytest_result["success"],
+            "duration": pytest_result["duration"],
+            "stdout_tail": pytest_result["stdout"][-300:] if pytest_result["stdout"] else "",
+        }
         if pytest_result["success"]:
-            score += 25.0
-            metrics["pytest_score"] = 25.0
+            score += 20.0
+            metrics["pytest_score"] = 20.0
         elif "collected 0" in pytest_result["stdout"]:
             metrics["pytest_score"] = 0.0
         else:
@@ -162,16 +183,38 @@ def evaluate_project(project_dir: str, timeout: int = 30) -> Metrics:
     except Exception:
         metrics["pytest"] = {"success": False, "stderr": "pytest failed to run"}
 
+    if benchmark and "hidden_test_files" in benchmark:
+        try:
+            hidden_result: CommandResult = run_command(
+                "python -m pytest test_hidden_*.py -x --tb=short --no-header -q",
+                cwd=project_dir,
+                timeout=timeout,
+            )
+            metrics["hidden_tests"] = {
+                "success": hidden_result["success"],
+                "duration": hidden_result["duration"],
+                "stdout_tail": hidden_result["stdout"][-300:] if hidden_result["stdout"] else "",
+            }
+            if hidden_result["success"]:
+                score += 25.0
+            else:
+                score += 5.0  # partial credit for attempting
+        except Exception:
+            metrics["hidden_tests"] = {"success": False, "stderr": "hidden tests failed to run"}
+
     try:
         lint_result: CommandResult = run_command(
             f"{sys.executable} -m flake8 --select=E,F,W --max-line-length=120 .",
             cwd=project_dir,
             timeout=30,
         )
-        metrics["lint"] = lint_result
+        metrics["lint"] = {
+            "success": lint_result["success"],
+            "duration": lint_result["duration"],
+        }
         if lint_result["success"]:
-            score += 10.0
-            metrics["lint_score"] = 10.0
+            score += 8.0
+            metrics["lint_score"] = 8.0
         else:
             metrics["lint_score"] = 0.0
     except Exception:
@@ -179,30 +222,30 @@ def evaluate_project(project_dir: str, timeout: int = 30) -> Metrics:
 
     try:
         import_result: CommandResult = run_command(
-            f"{sys.executable} -c \"import ast, sys; path='{project_dir}'; sys.path.insert(0, path); exec(open(f'{project_dir}/main.py').read())\"",
+            f"{sys.executable} -c \"import ast; path='{project_dir}'; sys.path.insert(0, path); exec(open(f'{project_dir}/main.py').read())\"",
             timeout=15,
         )
-        metrics["runtime"] = import_result
+        metrics["runtime"] = {"success": import_result["success"], "duration": import_result["duration"]}
         if import_result["success"]:
-            score += 15.0
-            metrics["runtime_score"] = 15.0
+            score += 10.0
+            metrics["runtime_score"] = 10.0
     except Exception:
         metrics["runtime"] = {"success": False, "stderr": "runtime execution failed"}
 
     has_test_files: bool = len(list(Path(project_dir).rglob("test_*.py"))) > 0
     metrics["has_tests"] = has_test_files
     if has_test_files:
-        score += 5.0
+        score += 3.0
 
     has_readme: bool = (Path(project_dir) / "README.md").exists()
     metrics["has_readme"] = has_readme
     if has_readme:
-        score += 2.0
+        score += 1.0
 
     has_requirements: bool = (Path(project_dir) / "requirements.txt").exists() or (Path(project_dir) / "pyproject.toml").exists()
     metrics["has_requirements"] = has_requirements
     if has_requirements:
-        score += 3.0
+        score += 2.0
 
     py_files: list[Path] = list(Path(project_dir).rglob("*.py"))
     metrics["file_count"] = len(py_files)

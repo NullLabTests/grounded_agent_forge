@@ -45,6 +45,12 @@ runtime_logs/*
 memory/*
 !memory/.gitkeep
 
+# Experiments
+experiments/projects/*
+!experiments/projects/.gitkeep
+# Track run_log.jsonl (it's structured experiment data)
+!experiments/run_log.jsonl
+
 # Environment
 .env
 *.key

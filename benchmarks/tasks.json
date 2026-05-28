@@ -1,62 +1,26 @@
 [
   {
-    "name": "flask_api",
-    "prompt": "Create a modular Flask REST API with health endpoint and clean structure",
-    "requirements": ["flask", "pytest"],
-    "hidden_tests": ["from flask import Flask", "def test_health_endpoint"]
-  },
-  {
-    "name": "cli_tool",
-    "prompt": "Create a Python CLI task manager using argparse",
+    "name": "cli_task_manager",
+    "prompt": "Create a Python CLI task manager using argparse. Commands: add TASK, list, complete ID, delete ID. Tasks persist to a JSON file called tasks.json. The main entry point must be in main.py with if __name__ == '__main__' block. Each task has id, description, done fields.",
     "requirements": ["pytest"],
-    "hidden_tests": ["import argparse", "if __name__ == '__main__'"]
+    "hidden_test_files": {
+      "test_hidden_cli.py": "import subprocess\nimport json\nimport os\n\n\ndef setup_module():\n    if os.path.exists('tasks.json'):\n        os.remove('tasks.json')\n\n\ndef teardown_module():\n    if os.path.exists('tasks.json'):\n        os.remove('tasks.json')\n\n\ndef test_add_creates_task():\n    result = subprocess.run(['python', 'main.py', 'add', 'test task'], capture_output=True, text=True)\n    assert result.returncode == 0, f'add failed: {result.stderr}'\n    assert os.path.exists('tasks.json'), 'tasks.json not created'\n    with open('tasks.json') as f:\n        tasks = json.load(f)\n    assert len(tasks) == 1\n    assert tasks[0]['description'] == 'test task'\n\n\ndef test_list_shows_tasks():\n    subprocess.run(['python', 'main.py', 'add', 'visible task'], capture_output=True)\n    result = subprocess.run(['python', 'main.py', 'list'], capture_output=True, text=True)\n    assert result.returncode == 0\n    assert 'visible task' in result.stdout\n\n\ndef test_complete_marks_done():\n    subprocess.run(['python', 'main.py', 'add', 'finish me'], capture_output=True)\n    result = subprocess.run(['python', 'main.py', 'complete', '1'], capture_output=True, text=True)\n    assert result.returncode == 0\n    with open('tasks.json') as f:\n        tasks = json.load(f)\n    assert any(t['id'] == 1 and t.get('done') for t in tasks)\n\n\ndef test_delete_removes_task():\n    subprocess.run(['python', 'main.py', 'add', 'delete me'], capture_output=True)\n    result = subprocess.run(['python', 'main.py', 'delete', '1'], capture_output=True, text=True)\n    assert result.returncode == 0\n    with open('tasks.json') as f:\n        tasks = json.load(f)\n    assert not any(t['id'] == 1 for t in tasks)\n"
+    }
   },
   {
-    "name": "websocket_server",
-    "prompt": "Create an async websocket echo server in Python",
-    "requirements": ["pytest", "pytest-asyncio"],
-    "hidden_tests": ["import asyncio", "import websockets"]
+    "name": "async_web_scraper",
+    "prompt": "Create an async Python web scraper in main.py. Must have an async function fetch_url(url, session) that fetches a single URL and returns the response text. Must have an async function scrape_all(urls) that fetches multiple URLs concurrently using asyncio.gather or similar, limits to max 3 concurrent requests via asyncio.Semaphore, retries failed requests once, and returns a list of (url, success, text_or_error) tuples. Must have a main() entry point that accepts a comma-separated list of URLs from sys.argv and prints results as JSON: [{url, success, length, error}]. Include proper error handling for network failures and timeouts.",
+    "requirements": ["pytest", "pytest-asyncio", "aiohttp"],
+    "hidden_test_files": {
+      "test_hidden_scraper.py": "import subprocess\nimport json\nimport sys\n\n\ndef test_scraper_imports():\n    import importlib\n    spec = importlib.util.find_spec('main')\n    assert spec is not None, 'main.py not importable'\n\n\ndef test_main_entry_point():\n    result = subprocess.run(\n        [sys.executable, 'main.py', 'https://example.com'],\n        capture_output=True, text=True, timeout=15\n    )\n    assert result.returncode == 0, f'main failed: {result.stderr}'\n    output = json.loads(result.stdout)\n    assert isinstance(output, list)\n    assert len(output) == 1\n    entry = output[0]\n    assert 'url' in entry\n    assert 'success' in entry\n    assert 'length' in entry\n\n\ndef test_scraper_handles_bad_url():\n    result = subprocess.run(\n        [sys.executable, 'main.py', 'https://nonexistent.example.test'],\n        capture_output=True, text=True, timeout=15\n    )\n    output = json.loads(result.stdout)\n    entry = output[0]\n    assert not entry['success'], 'should fail for bad URL'\n    assert 'error' in entry\n\n\ndef test_scraper_concurrent_flag():\n    source = open('main.py').read()\n    assert 'asyncio.gather' in source or 'asyncio.wait' in source or 'asyncio.TaskGroup' in source, 'no concurrent fetching'\n    assert 'asyncio.Semaphore' in source or 'asyncio.BoundedSemaphore' in source, 'no rate limiting'\n"
+    }
   },
   {
-    "name": "data_processor",
-    "prompt": "Create a Python data processing pipeline that reads CSV, transforms data, and outputs JSON",
+    "name": "data_pipeline",
+    "prompt": "Create a Python data pipeline in main.py. Must have a function read_csv(path) that reads a CSV file (handle both comma and header row) and returns a list of dicts. Must have a function filter_data(data, key, value) that filters rows where data[key] == value. Must have a function aggregate(data, group_key, agg_key, agg_func) that groups by group_key and applies agg_func ('sum', 'avg', 'count') to agg_key. Must have a function write_json(data, path) that writes the processed data as JSON. Must have a main() that accepts input CSV path from sys.argv, reads, filters where status=active, aggregates by department summing salary, and writes to {input}_report.json. Include error handling for missing files.",
     "requirements": ["pytest"],
-    "hidden_tests": ["import csv", "import json"]
-  },
-  {
-    "name": "math_library",
-    "prompt": "Create a Python math utility library with functions for statistics, algebra, and geometry",
-    "requirements": ["pytest"],
-    "hidden_tests": ["def test_", "import math"]
-  },
-  {
-    "name": "file_indexer",
-    "prompt": "Create a Python file indexer that walks directories, computes file hashes, and outputs a JSON index",
-    "requirements": ["pytest"],
-    "hidden_tests": ["import hashlib", "os.walk"]
-  },
-  {
-    "name": "config_parser",
-    "prompt": "Create a Python configuration parser that reads YAML/JSON/INI formats and validates schemas",
-    "requirements": ["pytest", "pyyaml"],
-    "hidden_tests": ["import yaml", "import json"]
-  },
-  {
-    "name": "rate_limiter",
-    "prompt": "Create a Python rate limiter implementation with token bucket or sliding window algorithm",
-    "requirements": ["pytest"],
-    "hidden_tests": ["class RateLimiter", "def test_rate_limit"]
-  },
-  {
-    "name": "caching_layer",
-    "prompt": "Create a Python caching library with TTL support, LRU eviction, and decorator interface",
-    "requirements": ["pytest"],
-    "hidden_tests": ["functools.lru_cache", "class Cache"]
-  },
-  {
-    "name": "log_analyzer",
-    "prompt": "Create a Python log file analyzer that parses timestamps, counts levels, and generates reports",
-    "requirements": ["pytest"],
-    "hidden_tests": ["import re", "def test_parse"]
+    "hidden_test_files": {
+      "test_hidden_pipeline.py": "import subprocess\nimport json\nimport os\nimport tempfile\n\n\ndef test_read_csv():\n    from main import read_csv\n    with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:\n        f.write('name,age,city\\nAlice,30,NYC\\nBob,25,LA\\n')\n        path = f.name\n    data = read_csv(path)\n    os.unlink(path)\n    assert len(data) == 2\n    assert data[0]['name'] == 'Alice'\n\n\ndef test_filter_data():\n    from main import filter_data\n    data = [{'name': 'Alice', 'status': 'active'}, {'name': 'Bob', 'status': 'inactive'}]\n    result = filter_data(data, 'status', 'active')\n    assert len(result) == 1\n    assert result[0]['name'] == 'Alice'\n\n\ndef test_aggregate_sum():\n    from main import aggregate\n    data = [{'dept': 'eng', 'salary': 100}, {'dept': 'eng', 'salary': 200}, {'dept': 'hr', 'salary': 150}]\n    result = aggregate(data, 'dept', 'salary', 'sum')\n    assert result['eng'] == 300\n    assert result['hr'] == 150\n\n\ndef test_aggregate_avg():\n    from main import aggregate\n    data = [{'dept': 'eng', 'salary': 100}, {'dept': 'eng', 'salary': 200}]\n    result = aggregate(data, 'dept', 'salary', 'avg')\n    assert result['eng'] == 150\n\n\ndef test_main_pipeline():\n    with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:\n        f.write('name,department,salary,status\\nAlice,Engineering,100000,active\\nBob,Engineering,120000,active\\nCharlie,HR,80000,inactive\\n')\n        input_path = f.name\n    output_path = input_path.replace('.csv', '_report.json')\n    result = subprocess.run(['python', 'main.py', input_path], capture_output=True, text=True, timeout=10)\n    os.unlink(input_path)\n    assert result.returncode == 0, f'pipeline failed: {result.stderr}'\n    assert os.path.exists(output_path), f'report not created at {output_path}'\n    with open(output_path) as f:\n        report = json.load(f)\n    os.unlink(output_path)\n    assert isinstance(report, dict)\n"
+    }
   }
 ]

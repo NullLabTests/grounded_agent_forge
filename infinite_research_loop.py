@@ -34,14 +34,25 @@ from population_manager import (
     add_individual,
 )
 from evaluator.runtime_evaluator import evaluate_project
-from reports.regression_tracker import log_cycle, get_summary
 
 OUTPUT_DIR: Path = Path("generated_projects")
+ARCHIVE_DIR: Path = Path("experiments/projects")
 BENCHMARKS_FILE: Path = Path("benchmarks/tasks.json")
-RUNTIME_LOGS: Path = Path("runtime_logs")
+EXPERIMENT_LOG: Path = Path("experiments/run_log.jsonl")
 
-Benchmark = dict[str, str]
+Benchmark = dict[str, str | dict[str, str]]
 Metrics = dict[str, Any]
+
+
+# === Ablation experiment configuration ===
+# Set these before running to control which evolution operators are active.
+# Each ablation isolates one variable to measure its contribution.
+ABLATION: dict[str, bool] = {
+    "mutation": True,       # mutate_prompt on selected parent
+    "crossover": True,      # crossover_prompts on two parents
+    "mutation_rate": 0.7,   # probability of mutation when both are enabled
+    "signal_hunt": True,    # inject missing evaluate.py keywords
+}
 
 
 def load_benchmarks() -> list[Benchmark]:
@@ -65,53 +76,57 @@ def git_auto_commit(message: str) -> None:
         pass
 
 
-def run_benchmark(prompt: str, benchmark: Benchmark, cycle_num: int) -> tuple[Metrics, Path, list[str]]:
-    """Run a full generation + evaluation cycle for a benchmark."""
+def run_benchmark(prompt: str, benchmark: Benchmark, cycle_num: int) -> tuple[Metrics, Path, list[str], dict[str, Any]]:
+    """Run a full generation + evaluation cycle for a benchmark.
+
+    Returns (metrics, task_dir, files, llm_usage).
+    """
     task_dir: Path = OUTPUT_DIR / f"cycle_{cycle_num}_{benchmark['name']}"
-    generated: str = generate_code(prompt)
+    generated: str
+    usage: dict[str, Any]
+    generated, usage = generate_code(prompt)
     files: list[str] = write_project_files(task_dir, generated)
-    metrics: Metrics = evaluate_project(task_dir)
-    return metrics, task_dir, files
+    metrics: Metrics = evaluate_project(task_dir, benchmark)
+    return metrics, task_dir, files, usage
 
 
-def check_keyword_coverage(generated_text: str) -> float:
-    """Check basic Python keyword coverage in generated code."""
-    keywords: list[str] = [
-        "def ", "class ", "import ", "async ", "await ",
-        "try:", "except", "return ", "if ", "elif ", "else:",
-        "for ", "while ", "with ", "lambda", "yield ",
-        "@", "True", "False", "None", "raise ",
-    ]
-    present: int = sum(1 for kw in keywords if kw in generated_text)
-    total: int = len(keywords)
-    return round(present / total * 10, 1) if total > 0 else 0
+def archive_project(task_dir: Path, cycle_num: int, benchmark_name: str, metrics: Metrics, usage: dict[str, Any], prompt: str) -> None:
+    """Archive a generated project with full metadata for later review."""
+    archive_path: Path = ARCHIVE_DIR / f"{benchmark_name}" / f"cycle_{cycle_num:04d}"
+    archive_path.mkdir(parents=True, exist_ok=True)
+
+    for fpath in task_dir.rglob("*"):
+        if fpath.is_file():
+            rel: str = str(fpath.relative_to(task_dir))
+            dest: Path = archive_path / rel
+            dest.parent.mkdir(exist_ok=True)
+            dest.write_text(fpath.read_text())
+
+    metadata: dict[str, Any] = {
+        "cycle": cycle_num,
+        "benchmark": benchmark_name,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "prompt": prompt,
+        "metrics": {k: v for k, v in metrics.items() if k != "prompt"},
+        "llm_usage": usage,
+    }
+    (archive_path / "metadata.json").write_text(json.dumps(metadata, indent=2))
 
 
-def evaluate_generated_content(metrics: Metrics) -> float:
-    """Compute content quality bonus from execution metrics."""
-    bonus: float = 0
-    if metrics.get("syntax", {}).get("valid"):
-        bonus += 5
-    node_count: int = metrics.get("ast_nodes", 0)
-    if node_count > 50:
-        bonus += 3
-    elif node_count > 20:
-        bonus += 1
-    if metrics.get("structure", {}).get("functions", 0) >= 3:
-        bonus += 2
-    if metrics.get("structure", {}).get("classes", 0) >= 2:
-        bonus += 2
-    if metrics.get("has_tests"):
-        bonus += 3
-    if metrics.get("has_readme"):
-        bonus += 2
-    if metrics.get("has_requirements"):
-        bonus += 3
-    return bonus
+def append_experiment_log(entry: dict[str, Any]) -> None:
+    """Append one cycle result to the JSONL experiment log."""
+    EXPERIMENT_LOG.parent.mkdir(exist_ok=True)
+    with open(EXPERIMENT_LOG, "a") as f:
+        f.write(json.dumps(entry) + "\n")
 
 
-def evolve_cycle(cycle_num: int, generation: int) -> float:
-    """Run one evolution cycle: select, mutate, generate, validate, persist."""
+def evolve_cycle(cycle_num: int, generation: int, ablation_override: dict[str, bool] | None = None) -> float:
+    """Run one evolution cycle: select, mutate, generate, validate, persist.
+
+    ablation_override can be passed to run a specific ablation for this cycle.
+    Falls back to the global ABLATION dict.
+    """
+    config: dict[str, bool] = ablation_override if ablation_override is not None else ABLATION
     population = load_population()
     benchmarks: list[Benchmark] = load_benchmarks()
 
@@ -120,42 +135,62 @@ def evolve_cycle(cycle_num: int, generation: int) -> float:
 
     best = select_best(population, k=1)
     parent = best[0] if best else population[0]
+    second = select_tournament(population) if len(population) >= 2 else None
 
-    if random.random() < 0.3 and len(population) >= 2:
-        second = select_tournament(population)
-        mutated_prompt: str = crossover_prompts(str(parent["prompt"]), str(second["prompt"]))
-    else:
+    mutated_prompt: str = str(parent["prompt"])
+    applied_mutation: str = "none"
+    applied_crossover: str | None = None
+
+    if config.get("crossover") and second and random.random() > config.get("mutation_rate", 0.7):
+        mutated_prompt = crossover_prompts(str(parent["prompt"]), str(second["prompt"]))
+        applied_mutation = "crossover"
+        applied_crossover = str(second["prompt"])[:80]
+    elif config.get("mutation"):
         mutated_prompt = mutate_prompt(str(parent["prompt"]))
+        applied_mutation = "mutation"
 
     benchmark: Benchmark = random.choice(benchmarks) if random.random() < 0.7 else benchmarks[0]
 
-    metrics, task_dir, files = run_benchmark(mutated_prompt, benchmark, cycle_num)
+    cycle_start: float = time.time()
+    metrics, task_dir, files, usage = run_benchmark(mutated_prompt, benchmark, cycle_num)
+    cycle_duration: float = time.time() - cycle_start
 
     base_score: float = float(metrics.get("final_score", 0))
-    content_bonus: float = evaluate_generated_content(metrics)
-    total_score: float = round(base_score + content_bonus, 1)
+    total_score: float = round(base_score, 1)
 
     population = add_individual(population, mutated_prompt, total_score, generation)
+
+    archive_project(task_dir, cycle_num, str(benchmark["name"]), metrics, usage, mutated_prompt)
 
     log_entry: dict[str, Any] = {
         "cycle": cycle_num,
         "generation": generation,
         "benchmark": benchmark["name"],
-        "base_score": base_score,
-        "content_bonus": content_bonus,
-        "total_score": total_score,
-        "files_generated": files,
-        "metrics": metrics,
+        "score": total_score,
+        "mutation": applied_mutation,
+        "crossover_source": applied_crossover,
+        "files_generated": len(files),
+        "syntax_valid": metrics.get("syntax", {}).get("valid", False),
+        "pytest_pass": metrics.get("pytest", {}).get("success", False),
+        "hidden_tests_pass": metrics.get("hidden_tests", {}).get("success", False),
+        "ast_nodes": metrics.get("ast_nodes", 0),
+        "functions": metrics.get("structure", {}).get("functions", 0),
+        "classes": metrics.get("structure", {}).get("classes", 0),
+        "has_tests": metrics.get("has_tests", False),
+        "has_readme": metrics.get("has_readme", False),
+        "has_requirements": metrics.get("has_requirements", False),
+        "llm_prompt_tokens": usage.get("prompt_tokens", 0),
+        "llm_completion_tokens": usage.get("completion_tokens", 0),
+        "llm_total_tokens": usage.get("total_tokens", 0),
+        "llm_model": usage.get("model", "unknown"),
+        "llm_duration_s": usage.get("duration_seconds", 0),
+        "cycle_duration_s": round(cycle_duration, 2),
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
-    RUNTIME_LOGS.mkdir(exist_ok=True)
-    with open(RUNTIME_LOGS / f"cycle_{cycle_num}.json", "w") as f:
-        json.dump(log_entry, f, indent=2)
+    append_experiment_log(log_entry)
 
     save_population(population)
-
-    log_cycle(cycle_num, generation, benchmark["name"], total_score, base_score, len(files))
 
     try:
         subprocess.run(
@@ -169,18 +204,22 @@ def evolve_cycle(cycle_num: int, generation: int) -> float:
     summary: str = (
         f"Cycle {cycle_num} | Gen {generation} | "
         f"Benchmark: {benchmark['name']} | "
-        f"Score: {total_score} (base={base_score}, bonus={content_bonus}) | "
-        f"Files: {len(files)}"
+        f"Score: {total_score} | "
+        f"Mut: {applied_mutation} | "
+        f"Files: {len(files)} | "
+        f"Tokens: {usage.get('total_tokens', 0)} | "
+        f"Time: {cycle_duration:.1f}s"
     )
     print(summary)
     return total_score
 
 
 def main() -> None:
-    """Run the infinite evolution loop."""
+    """Run the infinite evolution loop with experiment logging."""
     print("=" * 60)
     print("GROUNDED EVOLUTION SYSTEM")
     print("=" * 60)
+    print(f"Mutation: {ABLATION['mutation']}, Crossover: {ABLATION['crossover']}")
     print("Starting infinite evolution loop...")
     print()
 
