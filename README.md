@@ -27,10 +27,12 @@
 
 <!-- EVOLUTION_STATUS_START -->
 
-> **Last Evolution Cycle:** 2026-05-28T19:25:56.130374+00:00 UTC  
-> **Generation:** 50  
-> **Best Score:** 96.0  
+> **Last Evolution Cycle:** 2026-05-28T21:29:06+00:00 UTC  
+> **Generations:** 203  
+> **Best Score:** 39.0  
 > **Population Size:** 50  
+> **Benchmarks:** 7  
+> **Test Quality:** 4–5 real assertions per cycle  
 
 <!-- EVOLUTION_STATUS_END -->
 
@@ -284,20 +286,20 @@ Each cycle:
 12. Wait 10 seconds, repeat
 ```
 
-### Mutation Engine: `mutation_engine.py` (55 lines)
+### Mutation Engine: `mutation_engine.py` (136 lines)
 
-25 mutation operations that transform prompts:
+39 mutation operations that transform prompts, with **self-tuning weights**:
 
 ```python
 MUTATIONS = [
-    "Add stronger modularity requirements",
-    "Require async support",
-    "Require retry handling with exponential backoff",
-    "Require comprehensive tests with pytest",
-    "Add input validation using Pydantic or dataclasses",
-    # ... 20 more
+    {"desc": "Add stronger modularity requirements", "weight": 1.0},
+    {"desc": "Require async support", "weight": 1.0},
+    {"desc": "Require comprehensive tests with pytest", "weight": 1.0},
+    # ... 36 more, weights auto-adjusted by success rate
 ]
 ```
+
+Mutations that consistently produce negative score deltas have their probability reduced (down to 0.1x). Successful mutations maintain or increase their weight. Weights persist to `memory/mutation_weights.json`.
 
 Also provides `crossover_prompts()` for genetic recombination between two prompts.
 
@@ -420,61 +422,43 @@ git checkout prompt.txt
 
 ## Results
 
-### Current Snapshot
+### Grounded Evolution Results (203 Cycles)
 
 | Metric | Value |
 |--------|-------|
-| **Generations** | 218 |
-| **Population** | 218 prompts |
-| **Best Lexical Score** | **1000 / 1000** |
-| **Score Range** | 35 → 1000 (28.6×) |
-| **Ceiling Progression** | 500 → 862 → 1000 |
-| **Grounded Best** | 96.0 / 100 |
+| **Cycles** | 203 |
+| **Best Execution Score** | **39.0 / 80** |
+| **Score Range** | 17.0 → 39.0 |
+| **Average Score** | 30.9 |
+| **Test Quality** | 4–5 real assertions/cycle (after prompt fix) |
+| **Hidden Tests Passed** | 0 / 203 |
+| **Total LLM Tokens** | ~1,000,000 |
+| **Mutation Operators** | 127 uses |
+| **Crossover Operators** | 76 uses |
+| **Process Stability** | 100% (no crashes) |
 
-> **Note: Lexical Plateau at 862/1000 (now broken).** A bug in `mutate.py`'s `get_missing_keywords`
-> function was ignoring all 286 single-keyword scoring conditions (those without `and`/`or`),
-> blocking 180 uncovered signals. After fix: **896 → 914 → 932 → 950 → 968 → 986 → 1000** in 30 cycles.
-> 6 prompts now score the maximum. The grounded loop remains the next frontier.
+### What We Learned
 
-### Top 10 Prompts
+**1. Score plateau at 39/80** — Despite 203 cycles, the execution score never exceeded 39. The system converged to a fitness plateau. Prompts evolved to produce projects that pass basic structural checks (syntax, imports, file count) but consistently failed benchmark-specific behavioral tests. This suggests the mutation operators explore *prompt text similarity* space, not *functional correctness* space — and these are not the same.
 
-| Rank | File | Score | Key Differentiator |
-|------|------|-------|-------------------|
-| 1 | `prompt_131.txt` | 862.0 | Full production-ready agent structure |
-| 2 | `prompt_132.txt` | 862.0 | Comprehensive error handling + logging |
-| 3 | `prompt_133.txt` | 862.0 | Async-first with complete test suite |
-| 4 | `prompt_134.txt` | 862.0 | Docker + CI/CD + observability |
-| 5 | `prompt_135.txt` | 862.0 | Multi-source RAG + embedding pipeline |
-| 6 | `prompt_136.txt` | 862.0 | LangGraph + tool calling + streaming |
-| 7 | `prompt_137.txt` | 862.0 | Security + auth + rate limiting |
-| 8 | `prompt_138.txt` | 862.0 | Kubernetes + Terraform + monitoring |
-| 9 | `prompt_140.txt` | 862.0 | Full microservice architecture |
-| 10 | `prompt_121.txt` | 840.0 | LangGraph + Ollama + comprehensive testing |
+**2. Test quality is directly controllable via prompt engineering** — The single most impactful change was improving the LLM system prompt from *"Generate clean code"* to *"Generate real tests with assertions, no placeholders"*. This moved test quality from 0 real assertions to 4–5 per cycle instantly. The generator system prompt is a critical lever.
 
-### Score Distribution
+**3. Self-tuning mutation weights work but converge** — The weight adjustment system successfully downweighted 5 consistently harmful mutations to 0.1× probability. However, this also reduced exploration diversity — the same few mutations were repeatedly selected, narrowing the search space.
 
-```mermaid
-pie title Prompt Score Distribution (150 prompts)
-    "800–862 (elite)" : 30
-    "600–799 (strong)" : 25
-    "500–599 (good)" : 35
-    "300–499 (developing)" : 20
-    "100–299 (emerging)" : 25
-    "35–99 (baseline)" : 15
-```
+**4. Hidden behavioral tests remain unsolved** — Across 203 cycles, not a single generated project passed benchmark-specific hidden tests. The generated code produces correct *structure* (right function signatures, right file layout) but not correct *behavior* (the functions don't actually work as specified). This is the fundamental open problem.
 
-### What Top Prompts Generate
+**5. LLM generation is reliable** — The Mistral API completed all 203 generations without a single failure. Average generation time was stable at ~60s/cycle.
 
-When fed to the grounded generator, top prompts produce:
-- Full `src/package/` layouts with 20+ modules
-- LangGraph ReAct loops with Ollama local models
-- Pydantic v2 validation + type hints everywhere
-- Async/await, streaming, SSE/websocket support
-- OpenTelemetry + Prometheus + Grafana stacks
-- OAuth2/JWT auth with rate limiting
-- pytest property-based, snapshot, benchmark tests
-- Docker + Kubernetes + systemd deployment
-- CI/CD with GitHub Actions + pre-commit
+**6. Population converges without diversity preservation** — The greedy elitist selection (keep top 50) caused the population to converge to near-identical prompts producing 3-file projects. A diversity-preserving mechanism (e.g., novelty search or fitness sharing) is needed.
+
+### Open Challenges
+
+| Challenge | Impact | Hypothesis |
+|-----------|--------|------------|
+| **Hidden test failure** | Blocks scores above 40 | Need behavioral validation mid-generation, not post-hoc |
+| **Population convergence** | Stagnation after ~50 cycles | Add novelty search or multi-objective optimization |
+| **Token cost** | ~5,000 tokens/cycle | Cache similar prompts, use cheaper models for pre-filtering |
+| **Mutation granularity** | Most mutations are neutral | Add structured mutations that modify specific prompt sections
 
 ---
 
