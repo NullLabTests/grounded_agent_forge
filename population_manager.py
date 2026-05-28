@@ -47,8 +47,13 @@ def select_best(pop: Population, k: int = 3) -> Population:
     return sorted(pop, key=lambda x: float(x.get("score", 0)), reverse=True)[:k]
 
 
-def select_tournament(pop: Population, tournament_size: int = 3) -> PopulationEntry:
-    """Select via tournament: pick best from random subset."""
+def select_tournament(pop: Population, tournament_size: int = 3) -> PopulationEntry | None:
+    """Select via tournament: pick best from random subset.
+
+    Returns None if the population is empty.
+    """
+    if not pop:
+        return None
     competitors: Population = random.sample(pop, min(tournament_size, len(pop)))
     return max(competitors, key=lambda x: float(x.get("score", 0)))
 

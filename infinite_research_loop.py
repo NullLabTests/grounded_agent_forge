@@ -21,11 +21,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from population_manager import PopulationEntry
+
 sys.stdout.reconfigure(line_buffering=True)
 sys.stderr.reconfigure(line_buffering=True)
 
 from generator import generate_code, write_project_files
-from mutation_engine import mutate_prompt, crossover_prompts
+from mutation_engine import mutate_prompt, crossover_prompts, record_mutation_outcome
 from population_manager import (
     load_population,
     save_population,
@@ -47,7 +49,7 @@ Metrics = dict[str, Any]
 # === Ablation experiment configuration ===
 # Set these before running to control which evolution operators are active.
 # Each ablation isolates one variable to measure its contribution.
-ABLATION: dict[str, bool] = {
+ABLATION: dict[str, Any] = {
     "mutation": True,       # mutate_prompt on selected parent
     "crossover": True,      # crossover_prompts on two parents
     "mutation_rate": 0.7,   # probability of mutation when both are enabled
@@ -120,36 +122,48 @@ def append_experiment_log(entry: dict[str, Any]) -> None:
         f.write(json.dumps(entry) + "\n")
 
 
-def evolve_cycle(cycle_num: int, generation: int, ablation_override: dict[str, bool] | None = None) -> float:
+def evolve_cycle(
+    cycle_num: int,
+    generation: int,
+    ablation_override: dict[str, bool] | None = None,
+    benchmark_name: str | None = None,
+) -> float:
     """Run one evolution cycle: select, mutate, generate, validate, persist.
 
-    ablation_override can be passed to run a specific ablation for this cycle.
+    ablation_override: overrides the global ABLATION dict for this cycle.
+    benchmark_name:      if set, use this specific benchmark instead of random selection.
     Falls back to the global ABLATION dict.
     """
-    config: dict[str, bool] = ablation_override if ablation_override is not None else ABLATION
+    config: dict[str, Any] = ablation_override if ablation_override is not None else dict(ABLATION)
     population = load_population()
     benchmarks: list[Benchmark] = load_benchmarks()
 
     if not population:
-        population = load_population()
+        return 0.0
 
     best = select_best(population, k=1)
     parent = best[0] if best else population[0]
-    second = select_tournament(population) if len(population) >= 2 else None
+    parent_score: float = float(parent.get("score", 0))
+    second: PopulationEntry | None = select_tournament(population) if len(population) >= 2 else None
 
     mutated_prompt: str = str(parent["prompt"])
     applied_mutation: str = "none"
     applied_crossover: str | None = None
+    mutation_desc: str = ""
 
     if config.get("crossover") and second and random.random() > config.get("mutation_rate", 0.7):
         mutated_prompt = crossover_prompts(str(parent["prompt"]), str(second["prompt"]))
         applied_mutation = "crossover"
         applied_crossover = str(second["prompt"])[:80]
     elif config.get("mutation"):
-        mutated_prompt = mutate_prompt(str(parent["prompt"]))
+        mutated_prompt, mutation_desc = mutate_prompt(str(parent["prompt"]))
         applied_mutation = "mutation"
 
-    benchmark: Benchmark = random.choice(benchmarks) if random.random() < 0.7 else benchmarks[0]
+    if benchmark_name:
+        benchmark_candidates: list[Benchmark] = [b for b in benchmarks if b.get("name") == benchmark_name]
+        benchmark = benchmark_candidates[0] if benchmark_candidates else benchmarks[0]
+    else:
+        benchmark = random.choice(benchmarks)
 
     cycle_start: float = time.time()
     metrics, task_dir, files, usage = run_benchmark(mutated_prompt, benchmark, cycle_num)
@@ -169,6 +183,9 @@ def evolve_cycle(cycle_num: int, generation: int, ablation_override: dict[str, b
         "score": total_score,
         "mutation": applied_mutation,
         "crossover_source": applied_crossover,
+        "ablation_mutation": config.get("mutation", True),
+        "ablation_crossover": config.get("crossover", True),
+        "ablation_mutation_rate": config.get("mutation_rate", 0.7),
         "files_generated": len(files),
         "syntax_valid": metrics.get("syntax", {}).get("valid", False),
         "pytest_pass": metrics.get("pytest", {}).get("success", False),
@@ -210,6 +227,10 @@ def evolve_cycle(cycle_num: int, generation: int, ablation_override: dict[str, b
         f"Tokens: {usage.get('total_tokens', 0)} | "
         f"Time: {cycle_duration:.1f}s"
     )
+    if mutation_desc:
+        score_delta: float = total_score - parent_score
+        record_mutation_outcome(mutation_desc, score_delta)
+
     print(summary)
     return total_score
 

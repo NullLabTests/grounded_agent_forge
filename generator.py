@@ -54,7 +54,7 @@ def generate_code(prompt: str, model: str | None = None, temperature: float | No
         messages=[
             {
                 "role": "system",
-                "content": "You are an autonomous software architect. Generate clean executable Python projects. Output each file in a markdown code block with the filename as the language tag (e.g. ```main.py). Include a README.md and requirements.txt.",
+                "content": "You are an autonomous software architect. Generate clean executable Python projects. CRITICAL: Output each file in a markdown code block with the filename as the language tag (e.g. ```main.py). Include a README.md and requirements.txt. You MUST generate real test files (test_*.py) with real assertions — NO placeholder tests like `def test_placeholder(): assert True`. Every test must call the actual functions being tested with real inputs and verify their behavior with `assert`. Also include type hints on all function signatures and docstrings on all public functions and classes.",
             },
             {"role": "user", "content": prompt},
         ],

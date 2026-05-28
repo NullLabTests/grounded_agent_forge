@@ -234,8 +234,19 @@ def evaluate_project(project_dir: str, benchmark: Benchmark | None = None, timeo
 
     has_test_files: bool = len(list(Path(project_dir).rglob("test_*.py"))) > 0
     metrics["has_tests"] = has_test_files
-    if has_test_files:
-        score += 3.0
+    test_quality: float = 0.0
+    for tf in Path(project_dir).rglob("test_*.py"):
+        try:
+            content: str = tf.read_text()
+            assertion_count: int = content.count("assert ")
+            placeholder_count: int = content.count("test_placeholder")
+            real_assertions: int = max(0, assertion_count - placeholder_count)
+            test_quality += min(real_assertions, 10)
+        except Exception:
+            pass
+    metrics["test_quality"] = round(test_quality / max(1, len(list(Path(project_dir).rglob("test_*.py")))), 1) if list(Path(project_dir).rglob("test_*.py")) else 0.0
+    if test_quality > 0:
+        score += min(test_quality, 10.0)
 
     has_readme: bool = (Path(project_dir) / "README.md").exists()
     metrics["has_readme"] = has_readme
