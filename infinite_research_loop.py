@@ -34,6 +34,7 @@ from population_manager import (
     add_individual,
 )
 from evaluator.runtime_evaluator import evaluate_project
+from reports.regression_tracker import log_cycle, get_summary
 
 OUTPUT_DIR: Path = Path("generated_projects")
 BENCHMARKS_FILE: Path = Path("benchmarks/tasks.json")
@@ -153,6 +154,8 @@ def evolve_cycle(cycle_num: int, generation: int) -> float:
         json.dump(log_entry, f, indent=2)
 
     save_population(population)
+
+    log_cycle(cycle_num, generation, benchmark["name"], total_score, base_score, len(files))
 
     try:
         subprocess.run(

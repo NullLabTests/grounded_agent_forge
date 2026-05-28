@@ -1,11 +1,11 @@
 [
   {
-    "cycle": 99,
-    "generation": 99,
-    "benchmark": "test",
-    "total_score": 42.0,
-    "base_score": 30.0,
-    "files_count": 5,
-    "timestamp": "2026-05-28T16:15:42.607251+00:00"
+    "cycle": 0,
+    "generation": 0,
+    "benchmark": "flask_api",
+    "total_score": 23.0,
+    "base_score": 15.0,
+    "files_count": 23,
+    "timestamp": "2026-05-28T16:21:41.598873+00:00"
   }
 ]
