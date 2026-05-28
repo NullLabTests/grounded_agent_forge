@@ -39,6 +39,21 @@ MUTATIONS: list[dict] = [
     {"desc": "Add graceful shutdown handling", "weight": 1.0},
     {"desc": "Require dependency injection pattern", "weight": 1.0},
     {"desc": "Add feature flag support", "weight": 1.0},
+    # Quality-focused mutations
+    {"desc": "Require at least 5 real test assertions per test file", "weight": 1.0},
+    {"desc": "Require 90%+ type annotation coverage on all functions", "weight": 1.0},
+    {"desc": "Require comprehensive input validation and edge case handling", "weight": 1.0},
+    {"desc": "Require meaningful error messages in all exceptions", "weight": 1.0},
+    {"desc": "Require logging with rotation and structured format", "weight": 1.0},
+    {"desc": "Require configurable timeout and retry settings", "weight": 1.0},
+    {"desc": "Require property-based tests using hypothesis", "weight": 1.0},
+    {"desc": "Require fixture-based test setup with pytest fixtures", "weight": 1.0},
+    {"desc": "Require parameterized tests covering edge cases", "weight": 1.0},
+    {"desc": "Require async-compatible design patterns", "weight": 1.0},
+    {"desc": "Require Sphinx-compatible docstrings on every function", "weight": 1.0},
+    {"desc": "Require dependency pinning in requirements.txt", "weight": 1.0},
+    {"desc": "Require graceful degradation on missing dependencies", "weight": 1.0},
+    {"desc": "Require environment-specific configuration via dataclasses", "weight": 1.0},
 ]
 
 _history: list[dict] = []

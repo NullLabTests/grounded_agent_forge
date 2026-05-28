@@ -102,7 +102,10 @@ def archive_project(task_dir: Path, cycle_num: int, benchmark_name: str, metrics
             rel: str = str(fpath.relative_to(task_dir))
             dest: Path = archive_path / rel
             dest.parent.mkdir(exist_ok=True)
-            dest.write_text(fpath.read_text())
+            try:
+                dest.write_text(fpath.read_text(errors="replace"))
+            except Exception:
+                pass
 
     metadata: dict[str, Any] = {
         "cycle": cycle_num,
@@ -169,6 +172,9 @@ def evolve_cycle(
     metrics, task_dir, files, usage = run_benchmark(mutated_prompt, benchmark, cycle_num)
     cycle_duration: float = time.time() - cycle_start
 
+    if not files:
+        return 0.0
+
     base_score: float = float(metrics.get("final_score", 0))
     total_score: float = round(base_score, 1)
 
@@ -194,6 +200,8 @@ def evolve_cycle(
         "functions": metrics.get("structure", {}).get("functions", 0),
         "classes": metrics.get("structure", {}).get("classes", 0),
         "has_tests": metrics.get("has_tests", False),
+        "test_quality": metrics.get("test_quality", 0.0),
+        "test_quality_total": metrics.get("test_quality_total", 0.0),
         "has_readme": metrics.get("has_readme", False),
         "has_requirements": metrics.get("has_requirements", False),
         "llm_prompt_tokens": usage.get("prompt_tokens", 0),
@@ -217,6 +225,16 @@ def evolve_cycle(
         )
     except Exception:
         pass
+
+    if cycle_num > 0 and cycle_num % 10 == 0:
+        try:
+            subprocess.run(
+                [sys.executable, "reports/summary_report.py"],
+                capture_output=True,
+                timeout=15,
+            )
+        except Exception:
+            pass
 
     summary: str = (
         f"Cycle {cycle_num} | Gen {generation} | "

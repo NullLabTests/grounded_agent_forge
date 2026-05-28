@@ -68,6 +68,14 @@ def run_command(cmd: str | list[str], cwd: str | None = None, timeout: int = 60,
         }
 
 
+def _safe_read(path: Path) -> str:
+    """Read a file safely, replacing invalid UTF-8 sequences."""
+    try:
+        return path.read_text(errors="replace")
+    except Exception:
+        return ""
+
+
 def parse_syntax(project_dir: str) -> dict[str, Any]:
     """Parse all Python files in a project directory for syntactic validity."""
     errors: list[dict[str, str]] = []
@@ -75,8 +83,7 @@ def parse_syntax(project_dir: str) -> dict[str, Any]:
     for py_file in Path(project_dir).rglob("*.py"):
         files_found += 1
         try:
-            with open(py_file) as f:
-                ast.parse(f.read())
+            ast.parse(_safe_read(py_file))
         except SyntaxError as e:
             errors.append({"file": str(py_file), "error": str(e)})
     return {"files": files_found, "errors": errors, "valid": len(errors) == 0 and files_found > 0}
@@ -87,9 +94,8 @@ def count_ast_nodes(project_dir: str) -> int:
     total_nodes: int = 0
     for py_file in Path(project_dir).rglob("*.py"):
         try:
-            with open(py_file) as f:
-                tree: ast.AST = ast.parse(f.read())
-                total_nodes += sum(1 for _ in ast.walk(tree))
+            tree: ast.AST = ast.parse(_safe_read(py_file))
+            total_nodes += sum(1 for _ in ast.walk(tree))
         except SyntaxError:
             pass
     return total_nodes
@@ -101,8 +107,7 @@ def count_functions_and_classes(project_dir: str) -> dict[str, int]:
     classes: int = 0
     for py_file in Path(project_dir).rglob("*.py"):
         try:
-            with open(py_file) as f:
-                tree: ast.AST = ast.parse(f.read())
+            tree: ast.AST = ast.parse(_safe_read(py_file))
             for node in ast.walk(tree):
                 if isinstance(node, ast.FunctionDef):
                     functions += 1
@@ -235,16 +240,16 @@ def evaluate_project(project_dir: str, benchmark: Benchmark | None = None, timeo
     has_test_files: bool = len(list(Path(project_dir).rglob("test_*.py"))) > 0
     metrics["has_tests"] = has_test_files
     test_quality: float = 0.0
-    for tf in Path(project_dir).rglob("test_*.py"):
-        try:
-            content: str = tf.read_text()
-            assertion_count: int = content.count("assert ")
-            placeholder_count: int = content.count("test_placeholder")
-            real_assertions: int = max(0, assertion_count - placeholder_count)
-            test_quality += min(real_assertions, 10)
-        except Exception:
-            pass
-    metrics["test_quality"] = round(test_quality / max(1, len(list(Path(project_dir).rglob("test_*.py")))), 1) if list(Path(project_dir).rglob("test_*.py")) else 0.0
+    test_files_quality: list[Path] = list(Path(project_dir).rglob("test_*.py"))
+    for tf in test_files_quality:
+        content: str = _safe_read(tf)
+        assertion_count: int = content.count("assert ")
+        placeholder_count: int = content.count("test_placeholder") + content.count("pass")
+        real_assertions: int = max(0, assertion_count - placeholder_count)
+        test_quality += min(real_assertions, 10)
+    avg_test_quality: float = round(test_quality / max(1, len(test_files_quality)), 1) if test_files_quality else 0.0
+    metrics["test_quality"] = avg_test_quality
+    metrics["test_quality_total"] = round(test_quality, 1)
     if test_quality > 0:
         score += min(test_quality, 10.0)
 

@@ -180,7 +180,7 @@ def write_project_files(project_path: str, content: str) -> list[str]:
     if not list(project_path.rglob("test_*.py")):
         test_file: Path = project_path / "test_basic.py"
         test_file.write_text(
-            "def test_placeholder():\n    assert True\n"
+            "def test_placeholder() -> None:\n    assert True\n"
         )
         written.append("test_basic.py")
 
