@@ -371,6 +371,36 @@ This starts the infinite loop:
 4. Updates scores with execution results
 5. Auto-commits improvements to git
 
+### Ablation Experiments
+
+```bash
+# Run the full experiment grid (4 ablations × 3 benchmarks)
+python run_experiment.py
+
+# Quick smoke test (10 cycles per condition)
+python run_experiment.py --quick
+
+# Preview what will run
+python run_experiment.py --list
+
+# Resume incomplete runs
+python run_experiment.py --resume
+```
+
+Results are logged to `experiments/run_log.jsonl` and per-condition files in `experiments/ablation_runs/`.
+
+### Visualize Convergence
+
+```bash
+# Plot from main experiment log
+python analysis/plot_convergence.py
+
+# Plot from ablation runs with rolling average
+python analysis/plot_convergence.py --ablation --rolling=5
+```
+
+Charts saved to `analysis/charts/`. Requires `matplotlib`.
+
 ### Manual Evolution
 
 ```bash
