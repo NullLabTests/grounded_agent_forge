@@ -105,6 +105,11 @@
     "generation": 15
   },
   {
+    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration\n\nAdditional requirement: Require type hints on all function signatures",
+    "score": 42.0,
+    "generation": 3
+  },
+  {
     "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration",
     "score": 39.0,
     "generation": 0
@@ -113,6 +118,11 @@
     "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration",
     "score": 34.0,
     "generation": 0
+  },
+  {
+    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration Additional requirement: Require docstrings on all public functions",
+    "score": 34.0,
+    "generation": 1
   },
   {
     "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration\n\nAdditional requirement: Add stronger modularity requirements",
@@ -193,6 +203,11 @@
     "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration\n\nAdditional requirement: Require dependency injection pattern",
     "score": 21.0,
     "generation": 21
+  },
+  {
+    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration\n\nAdditional requirement: Require security best practices",
+    "score": 21.0,
+    "generation": 2
   },
   {
     "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration\n\nAdditional requirement: Require cleaner architecture with separation of concerns",
