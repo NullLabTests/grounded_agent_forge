@@ -1,6 +1,13 @@
+"""Prompt mutation operators for the grounded evolution loop.
+
+Provides mutation and crossover functions that transform prompts
+to explore the prompt fitness landscape.
+"""
+
 import random
 
-MUTATIONS = [
+
+MUTATIONS: list[str] = [
     "Add stronger modularity requirements",
     "Require async support",
     "Require better logging with structured output",
@@ -28,7 +35,7 @@ MUTATIONS = [
     "Add feature flag support",
 ]
 
-BENCHMARK_WEIGHTS = {
+BENCHMARK_WEIGHTS: dict[str, float] = {
     "flask_api": 1.0,
     "cli_tool": 1.0,
     "websocket_server": 1.2,
@@ -37,19 +44,20 @@ BENCHMARK_WEIGHTS = {
 }
 
 
-def mutate_prompt(prompt, benchmark_name=None):
-    mutation = random.choice(MUTATIONS)
-    result = f"{prompt}\n\nAdditional requirement: {mutation}"
-    return result
+def mutate_prompt(prompt: str, benchmark_name: str | None = None) -> str:
+    """Apply a random mutation to a prompt by appending a requirement."""
+    mutation: str = random.choice(MUTATIONS)
+    return f"{prompt}\n\nAdditional requirement: {mutation}"
 
 
-def crossover_prompts(prompt_a, prompt_b):
-    words_a = prompt_a.split()
-    words_b = prompt_b.split()
-    split_point = random.randint(len(words_a) // 4, 3 * len(words_a) // 4)
-    result = " ".join(words_a[:split_point] + words_b[split_point:])
-    return result
+def crossover_prompts(prompt_a: str, prompt_b: str) -> str:
+    """Perform single-point crossover between two prompts."""
+    words_a: list[str] = prompt_a.split()
+    words_b: list[str] = prompt_b.split()
+    split_point: int = random.randint(len(words_a) // 4, 3 * len(words_a) // 4)
+    return " ".join(words_a[:split_point] + words_b[split_point:])
 
 
-def get_mutation_pool():
+def get_mutation_pool() -> list[str]:
+    """Return the full mutation pool."""
     return MUTATIONS.copy()

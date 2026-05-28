@@ -1,15 +1,27 @@
+"""Population persistence and selection for the grounded evolution loop.
+
+Manages a JSON-based population of prompts with their scores and
+generation metadata. Supports elitist selection and tournament
+selection strategies.
+"""
+
 import json
 import random
 from pathlib import Path
 
-POP_FILE = "population/population.json"
-MAX_POPULATION = 50
+
+POP_FILE: str = "population/population.json"
+MAX_POPULATION: int = 50
+
+PopulationEntry = dict[str, str | float | int]
+Population = list[PopulationEntry]
 
 
-def load_population():
+def load_population() -> Population:
+    """Load population from JSON file, seeding if empty."""
     path = Path(POP_FILE)
     if not path.exists():
-        seed = [
+        seed: Population = [
             {
                 "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests",
                 "score": 0,
@@ -24,21 +36,25 @@ def load_population():
         return json.load(f)
 
 
-def save_population(pop):
+def save_population(pop: Population) -> None:
+    """Persist population to JSON file."""
     with open(POP_FILE, "w") as f:
         json.dump(pop, f, indent=2)
 
 
-def select_best(pop, k=3):
-    return sorted(pop, key=lambda x: x.get("score", 0), reverse=True)[:k]
+def select_best(pop: Population, k: int = 3) -> Population:
+    """Return the top-k individuals by score (elitist selection)."""
+    return sorted(pop, key=lambda x: float(x.get("score", 0)), reverse=True)[:k]
 
 
-def select_tournament(pop, tournament_size=3):
-    competitors = random.sample(pop, min(tournament_size, len(pop)))
-    return max(competitors, key=lambda x: x.get("score", 0))
+def select_tournament(pop: Population, tournament_size: int = 3) -> PopulationEntry:
+    """Select via tournament: pick best from random subset."""
+    competitors: Population = random.sample(pop, min(tournament_size, len(pop)))
+    return max(competitors, key=lambda x: float(x.get("score", 0)))
 
 
-def add_individual(pop, prompt, score, generation):
+def add_individual(pop: Population, prompt: str, score: float, generation: int) -> Population:
+    """Add a new individual and cull to MAX_POPULATION."""
     pop.append(
         {
             "prompt": prompt,
@@ -46,5 +62,5 @@ def add_individual(pop, prompt, score, generation):
             "generation": generation,
         }
     )
-    pop.sort(key=lambda x: x.get("score", 0), reverse=True)
+    pop.sort(key=lambda x: float(x.get("score", 0)), reverse=True)
     return pop[:MAX_POPULATION]

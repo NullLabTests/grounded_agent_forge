@@ -7,21 +7,23 @@ Configure via environment variables — never hardcode API keys.
 import os
 import re
 from pathlib import Path
+from typing import Any
 
-_openai_client = None
+_openai_client: Any = None
 
-DEFAULT_BASE_URL = os.environ.get(
+DEFAULT_BASE_URL: str = os.environ.get(
     "LLM_BASE_URL",
     "https://api.mistral.ai/v1",
 )
-DEFAULT_MODEL = os.environ.get("LLM_MODEL", "mistral-large-latest")
+DEFAULT_MODEL: str = os.environ.get("LLM_MODEL", "mistral-large-latest")
 
 
-def _get_client():
+def _get_client() -> Any:
+    """Get or create the OpenAI-compatible client."""
     global _openai_client
     if _openai_client is None:
         from openai import OpenAI
-        api_key = os.environ.get("LLM_API_KEY")
+        api_key: str | None = os.environ.get("LLM_API_KEY")
         if not api_key:
             raise ValueError(
                 "LLM_API_KEY environment variable not set. "
@@ -34,7 +36,7 @@ def _get_client():
     return _openai_client
 
 
-TEMPLATES = [
+TEMPLATES: list[dict[str, str]] = [
     {
         "main.py": '''"""
 Modular application entry point.
@@ -126,7 +128,7 @@ def add_task(description):
 def list_tasks():
     tasks = load_tasks()
     for t in tasks:
-        status = "✓" if t["done"] else " "
+        status = "\\u2713" if t["done"] else " "
         print(f"[{status}] {t['id']}: {t['description']}")
 
 
@@ -164,7 +166,8 @@ def test_add_and_load():
 ]
 
 
-def generate_code(prompt, model=None, temperature=None):
+def generate_code(prompt: str, model: str | None = None, temperature: float | None = None) -> str:
+    """Generate project code from a prompt via LLM."""
     client = _get_client()
     response = client.chat.completions.create(
         model=model or DEFAULT_MODEL,
@@ -180,7 +183,7 @@ def generate_code(prompt, model=None, temperature=None):
     return response.choices[0].message.content
 
 
-LANG_MAP = {
+LANG_MAP: dict[str, str] = {
     "python": "main.py",
     "py": "main.py",
     "bash": "run.sh",
@@ -199,16 +202,17 @@ LANG_MAP = {
 }
 
 
-def parse_code_blocks(content):
-    blocks = []
+def parse_code_blocks(content: str) -> list[dict[str, str]]:
+    """Extract code blocks with filenames from LLM markdown output."""
+    blocks: list[dict[str, str]] = []
     pattern = r"```(\w+(?:\.\w+)?)\n(.*?)```"
     matches = re.findall(pattern, content, re.DOTALL)
-    file_counter = 0
+    file_counter: int = 0
     for tag, code in matches:
         code = code.strip()
         if not code:
             continue
-        filename = tag if "." in tag else LANG_MAP.get(tag)
+        filename: str | None = tag if "." in tag else LANG_MAP.get(tag)
         if not filename:
             file_counter += 1
             filename = f"module_{file_counter}.py" if "python" in content[:content.find(f"```{tag}") + len(tag) + 100].lower() else f"file_{file_counter}.txt"
@@ -216,28 +220,29 @@ def parse_code_blocks(content):
     return blocks
 
 
-def write_project_files(project_path, content):
+def write_project_files(project_path: str, content: str) -> list[str]:
+    """Write parsed code blocks to disk as project files."""
     project_path = Path(project_path)
     project_path.mkdir(parents=True, exist_ok=True)
 
-    blocks = parse_code_blocks(content)
+    blocks: list[dict[str, str]] = parse_code_blocks(content)
 
     if not blocks:
         (project_path / "main.py").write_text(content)
-        return
+        return ["main.py"]
 
-    written = []
+    written: list[str] = []
     for block in blocks:
-        filename = block["filename"]
+        filename: str = block["filename"]
         if ".." in filename or filename.startswith("/"):
             continue
-        filepath = project_path / filename
+        filepath: Path = project_path / filename
         filepath.parent.mkdir(parents=True, exist_ok=True)
         filepath.write_text(block["code"])
         written.append(filename)
 
     if not list(project_path.rglob("test_*.py")):
-        test_file = project_path / "test_basic.py"
+        test_file: Path = project_path / "test_basic.py"
         test_file.write_text(
             "def test_placeholder():\n    assert True\n"
         )

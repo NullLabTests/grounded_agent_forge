@@ -22,11 +22,17 @@ import tempfile
 import time
 import shutil
 from pathlib import Path
+from typing import Any
 
 
-def run_command(cmd, cwd=None, timeout=60, shell=True):
+CommandResult = dict[str, Any]
+Metrics = dict[str, Any]
+
+
+def run_command(cmd: str | list[str], cwd: str | None = None, timeout: int = 60, shell: bool = True) -> CommandResult:
+    """Execute a shell command and return results with timing."""
     try:
-        start = time.time()
+        start: float = time.time()
         result = subprocess.run(
             cmd if isinstance(cmd, list) else cmd,
             cwd=cwd,
@@ -35,7 +41,7 @@ def run_command(cmd, cwd=None, timeout=60, shell=True):
             text=True,
             timeout=timeout,
         )
-        duration = time.time() - start
+        duration: float = time.time() - start
         return {
             "success": result.returncode == 0,
             "stdout": result.stdout,
@@ -61,9 +67,10 @@ def run_command(cmd, cwd=None, timeout=60, shell=True):
         }
 
 
-def parse_syntax(project_dir):
-    errors = []
-    files_found = 0
+def parse_syntax(project_dir: str) -> dict[str, Any]:
+    """Parse all Python files in a project directory for syntactic validity."""
+    errors: list[dict[str, str]] = []
+    files_found: int = 0
     for py_file in Path(project_dir).rglob("*.py"):
         files_found += 1
         try:
@@ -74,25 +81,27 @@ def parse_syntax(project_dir):
     return {"files": files_found, "errors": errors, "valid": len(errors) == 0 and files_found > 0}
 
 
-def count_ast_nodes(project_dir):
-    total_nodes = 0
+def count_ast_nodes(project_dir: str) -> int:
+    """Count total AST nodes across all Python files in a project."""
+    total_nodes: int = 0
     for py_file in Path(project_dir).rglob("*.py"):
         try:
             with open(py_file) as f:
-                tree = ast.parse(f.read())
+                tree: ast.AST = ast.parse(f.read())
                 total_nodes += sum(1 for _ in ast.walk(tree))
         except SyntaxError:
             pass
     return total_nodes
 
 
-def count_functions_and_classes(project_dir):
-    functions = 0
-    classes = 0
+def count_functions_and_classes(project_dir: str) -> dict[str, int]:
+    """Count functions and classes across all Python files."""
+    functions: int = 0
+    classes: int = 0
     for py_file in Path(project_dir).rglob("*.py"):
         try:
             with open(py_file) as f:
-                tree = ast.parse(f.read())
+                tree: ast.AST = ast.parse(f.read())
             for node in ast.walk(tree):
                 if isinstance(node, ast.FunctionDef):
                     functions += 1
@@ -103,11 +112,21 @@ def count_functions_and_classes(project_dir):
     return {"functions": functions, "classes": classes}
 
 
-def evaluate_project(project_dir, timeout=30):
-    score = 0.0
-    metrics = {}
+def evaluate_project(project_dir: str, timeout: int = 30) -> Metrics:
+    """Run full execution-grounded evaluation on a generated project.
 
-    syntax_result = parse_syntax(project_dir)
+    Returns a metrics dict with:
+    - syntax: AST parse results
+    - structure: function/class counts
+    - pytest: test execution results
+    - lint: flake8 results
+    - runtime: import execution results
+    - final_score: composite execution score
+    """
+    score: float = 0.0
+    metrics: Metrics = {}
+
+    syntax_result: dict[str, Any] = parse_syntax(project_dir)
     metrics["syntax"] = syntax_result
     if syntax_result["valid"]:
         score += 20.0
@@ -115,10 +134,10 @@ def evaluate_project(project_dir, timeout=30):
     else:
         metrics["syntax_score"] = 0.0
 
-    node_count = count_ast_nodes(project_dir)
+    node_count: int = count_ast_nodes(project_dir)
     metrics["ast_nodes"] = node_count
 
-    structure = count_functions_and_classes(project_dir)
+    structure: dict[str, int] = count_functions_and_classes(project_dir)
     metrics["structure"] = structure
     if structure["functions"] >= 1:
         score += 5.0
@@ -126,8 +145,8 @@ def evaluate_project(project_dir, timeout=30):
         score += 5.0
 
     try:
-        pytest_result = run_command(
-            f"{sys.executable} -m pytest -x --tb=short --no-header -q",
+        pytest_result: CommandResult = run_command(
+            "python -m pytest -x --tb=short --no-header -q",
             cwd=project_dir,
             timeout=timeout,
         )
@@ -144,7 +163,7 @@ def evaluate_project(project_dir, timeout=30):
         metrics["pytest"] = {"success": False, "stderr": "pytest failed to run"}
 
     try:
-        lint_result = run_command(
+        lint_result: CommandResult = run_command(
             f"{sys.executable} -m flake8 --select=E,F,W --max-line-length=120 .",
             cwd=project_dir,
             timeout=30,
@@ -158,43 +177,34 @@ def evaluate_project(project_dir, timeout=30):
     except Exception:
         metrics["lint"] = {"success": False, "stderr": "flake8 failed"}
 
-    py_files = sorted(Path(project_dir).rglob("*.py"))
-    runtime_success = False
-    if py_files:
-        for pyf in py_files[:3]:
-            try:
-                r = run_command(
-                    f"{sys.executable} -c \"import ast, sys; sys.path.insert(0, '{project_dir}'); exec(open('{pyf}').read())\"",
-                    timeout=15,
-                )
-                if r["success"]:
-                    runtime_success = True
-                    break
-            except Exception:
-                pass
-    metrics["runtime"] = {"success": runtime_success}
-    if runtime_success:
-        score += 15.0
-        metrics["runtime_score"] = 15.0
-    else:
-        metrics["runtime_score"] = 0.0
+    try:
+        import_result: CommandResult = run_command(
+            f"{sys.executable} -c \"import ast, sys; path='{project_dir}'; sys.path.insert(0, path); exec(open(f'{project_dir}/main.py').read())\"",
+            timeout=15,
+        )
+        metrics["runtime"] = import_result
+        if import_result["success"]:
+            score += 15.0
+            metrics["runtime_score"] = 15.0
+    except Exception:
+        metrics["runtime"] = {"success": False, "stderr": "runtime execution failed"}
 
-    has_test_files = len(list(Path(project_dir).rglob("test_*.py"))) > 0
+    has_test_files: bool = len(list(Path(project_dir).rglob("test_*.py"))) > 0
     metrics["has_tests"] = has_test_files
     if has_test_files:
         score += 5.0
 
-    has_readme = (Path(project_dir) / "README.md").exists()
+    has_readme: bool = (Path(project_dir) / "README.md").exists()
     metrics["has_readme"] = has_readme
     if has_readme:
         score += 2.0
 
-    has_requirements = (Path(project_dir) / "requirements.txt").exists() or (Path(project_dir) / "pyproject.toml").exists()
+    has_requirements: bool = (Path(project_dir) / "requirements.txt").exists() or (Path(project_dir) / "pyproject.toml").exists()
     metrics["has_requirements"] = has_requirements
     if has_requirements:
         score += 3.0
 
-    py_files = list(Path(project_dir).rglob("*.py"))
+    py_files: list[Path] = list(Path(project_dir).rglob("*.py"))
     metrics["file_count"] = len(py_files)
     if len(py_files) >= 3:
         score += 5.0

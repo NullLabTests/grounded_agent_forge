@@ -22,8 +22,8 @@ This script:
 
 set -e
 
-REPO_URL="https://github.com/NullLabTests/autoresearch-ai-agent-skeleton.git"
-REPO_NAME="autoresearch-ai-agent-skeleton"
+REPO_URL="https://github.com/NullLabTests/grounded_evolution.git"
+REPO_NAME="grounded_evolution"
 BRANCH_NAME="grounded-evolution"
 
 # ============================================================

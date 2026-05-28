@@ -17,8 +17,9 @@ import random
 import subprocess
 import sys
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
 sys.stdout.reconfigure(line_buffering=True)
 sys.stderr.reconfigure(line_buffering=True)
@@ -34,19 +35,24 @@ from population_manager import (
 )
 from evaluator.runtime_evaluator import evaluate_project
 
-OUTPUT_DIR = Path("generated_projects")
-BENCHMARKS_FILE = Path("benchmarks/tasks.json")
-RUNTIME_LOGS = Path("runtime_logs")
+OUTPUT_DIR: Path = Path("generated_projects")
+BENCHMARKS_FILE: Path = Path("benchmarks/tasks.json")
+RUNTIME_LOGS: Path = Path("runtime_logs")
+
+Benchmark = dict[str, str]
+Metrics = dict[str, Any]
 
 
-def load_benchmarks():
+def load_benchmarks() -> list[Benchmark]:
+    """Load benchmark task definitions from JSON."""
     if BENCHMARKS_FILE.exists():
         with open(BENCHMARKS_FILE) as f:
             return json.load(f)
     return [{"name": "default", "prompt": "Generate a clean Python project"}]
 
 
-def git_auto_commit(message):
+def git_auto_commit(message: str) -> None:
+    """Auto-commit all changes with the given message."""
     try:
         subprocess.run(["git", "add", "-A"], capture_output=True, timeout=10)
         subprocess.run(
@@ -58,33 +64,34 @@ def git_auto_commit(message):
         pass
 
 
-def run_benchmark(prompt, benchmark, cycle_num):
-    task_dir = OUTPUT_DIR / f"cycle_{cycle_num}_{benchmark['name']}"
-    generated = generate_code(prompt)
-    files = write_project_files(task_dir, generated)
-    metrics = evaluate_project(task_dir)
+def run_benchmark(prompt: str, benchmark: Benchmark, cycle_num: int) -> tuple[Metrics, Path, list[str]]:
+    """Run a full generation + evaluation cycle for a benchmark."""
+    task_dir: Path = OUTPUT_DIR / f"cycle_{cycle_num}_{benchmark['name']}"
+    generated: str = generate_code(prompt)
+    files: list[str] = write_project_files(task_dir, generated)
+    metrics: Metrics = evaluate_project(task_dir)
     return metrics, task_dir, files
 
 
-def check_keyword_coverage(generated_text):
-    coverage = 0
-    keywords = [
+def check_keyword_coverage(generated_text: str) -> float:
+    """Check basic Python keyword coverage in generated code."""
+    keywords: list[str] = [
         "def ", "class ", "import ", "async ", "await ",
         "try:", "except", "return ", "if ", "elif ", "else:",
         "for ", "while ", "with ", "lambda", "yield ",
         "@", "True", "False", "None", "raise ",
     ]
-    present = sum(1 for kw in keywords if kw in generated_text)
-    total = len(keywords)
-    coverage = round(present / total * 10, 1) if total > 0 else 0
-    return coverage
+    present: int = sum(1 for kw in keywords if kw in generated_text)
+    total: int = len(keywords)
+    return round(present / total * 10, 1) if total > 0 else 0
 
 
-def evaluate_generated_content(metrics):
-    bonus = 0
+def evaluate_generated_content(metrics: Metrics) -> float:
+    """Compute content quality bonus from execution metrics."""
+    bonus: float = 0
     if metrics.get("syntax", {}).get("valid"):
         bonus += 5
-    node_count = metrics.get("ast_nodes", 0)
+    node_count: int = metrics.get("ast_nodes", 0)
     if node_count > 50:
         bonus += 3
     elif node_count > 20:
@@ -102,9 +109,10 @@ def evaluate_generated_content(metrics):
     return bonus
 
 
-def evolve_cycle(cycle_num, generation):
+def evolve_cycle(cycle_num: int, generation: int) -> float:
+    """Run one evolution cycle: select, mutate, generate, validate, persist."""
     population = load_population()
-    benchmarks = load_benchmarks()
+    benchmarks: list[Benchmark] = load_benchmarks()
 
     if not population:
         population = load_population()
@@ -114,21 +122,21 @@ def evolve_cycle(cycle_num, generation):
 
     if random.random() < 0.3 and len(population) >= 2:
         second = select_tournament(population)
-        mutated_prompt = crossover_prompts(parent["prompt"], second["prompt"])
+        mutated_prompt: str = crossover_prompts(str(parent["prompt"]), str(second["prompt"]))
     else:
-        mutated_prompt = mutate_prompt(parent["prompt"])
+        mutated_prompt = mutate_prompt(str(parent["prompt"]))
 
-    benchmark = random.choice(benchmarks) if random.random() < 0.7 else benchmarks[0]
+    benchmark: Benchmark = random.choice(benchmarks) if random.random() < 0.7 else benchmarks[0]
 
     metrics, task_dir, files = run_benchmark(mutated_prompt, benchmark, cycle_num)
 
-    base_score = metrics.get("final_score", 0)
-    content_bonus = evaluate_generated_content(metrics)
-    total_score = round(base_score + content_bonus, 1)
+    base_score: float = float(metrics.get("final_score", 0))
+    content_bonus: float = evaluate_generated_content(metrics)
+    total_score: float = round(base_score + content_bonus, 1)
 
     population = add_individual(population, mutated_prompt, total_score, generation)
 
-    log_entry = {
+    log_entry: dict[str, Any] = {
         "cycle": cycle_num,
         "generation": generation,
         "benchmark": benchmark["name"],
@@ -137,7 +145,7 @@ def evolve_cycle(cycle_num, generation):
         "total_score": total_score,
         "files_generated": files,
         "metrics": metrics,
-        "timestamp": datetime.now(datetime.UTC).isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
     RUNTIME_LOGS.mkdir(exist_ok=True)
@@ -155,7 +163,7 @@ def evolve_cycle(cycle_num, generation):
     except Exception:
         pass
 
-    summary = (
+    summary: str = (
         f"Cycle {cycle_num} | Gen {generation} | "
         f"Benchmark: {benchmark['name']} | "
         f"Score: {total_score} (base={base_score}, bonus={content_bonus}) | "
@@ -165,23 +173,24 @@ def evolve_cycle(cycle_num, generation):
     return total_score
 
 
-def main():
+def main() -> None:
+    """Run the infinite evolution loop."""
     print("=" * 60)
     print("GROUNDED EVOLUTION SYSTEM")
     print("=" * 60)
     print("Starting infinite evolution loop...")
     print()
 
-    generation = 0
-    cycle = 0
-    best_score = 0
+    generation: int = 0
+    cycle: int = 0
+    best_score: float = 0
 
     while True:
         try:
-            score = evolve_cycle(cycle, generation)
+            score: float = evolve_cycle(cycle, generation)
             if score > best_score:
                 best_score = score
-                git_message = f"evolution cycle={cycle} gen={generation} score={score}"
+                git_message: str = f"evolution cycle={cycle} gen={generation} score={score}"
                 git_auto_commit(git_message)
 
             generation += 1

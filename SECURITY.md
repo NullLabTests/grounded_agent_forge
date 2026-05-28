@@ -2,7 +2,7 @@
 
 ## Reporting a Vulnerability
 
-This is an experimental research project for prompt optimization. If you discover a security issue, please open an [issue](https://github.com/NullLabTests/autoresearch-ai-agent-skeleton/issues) with the label `security`.
+This is an experimental research project for prompt optimization. If you discover a security issue, please open an [issue](https://github.com/NullLabTests/grounded_evolution/issues) with the label `security`.
 
 Please **do not** disclose vulnerabilities publicly until they have been addressed.
 

@@ -3,45 +3,60 @@
     "name": "flask_api",
     "prompt": "Create a modular Flask REST API with health endpoint and clean structure",
     "requirements": ["flask", "pytest"],
-    "hidden_tests": [
-      "from flask import Flask",
-      "def test_health_endpoint"
-    ]
+    "hidden_tests": ["from flask import Flask", "def test_health_endpoint"]
   },
   {
     "name": "cli_tool",
     "prompt": "Create a Python CLI task manager using argparse",
     "requirements": ["pytest"],
-    "hidden_tests": [
-      "import argparse",
-      "if __name__ == '__main__'"
-    ]
+    "hidden_tests": ["import argparse", "if __name__ == '__main__'"]
   },
   {
     "name": "websocket_server",
     "prompt": "Create an async websocket echo server in Python",
     "requirements": ["pytest", "pytest-asyncio"],
-    "hidden_tests": [
-      "import asyncio",
-      "import websockets"
-    ]
+    "hidden_tests": ["import asyncio", "import websockets"]
   },
   {
     "name": "data_processor",
     "prompt": "Create a Python data processing pipeline that reads CSV, transforms data, and outputs JSON",
     "requirements": ["pytest"],
-    "hidden_tests": [
-      "import csv",
-      "import json"
-    ]
+    "hidden_tests": ["import csv", "import json"]
   },
   {
     "name": "math_library",
     "prompt": "Create a Python math utility library with functions for statistics, algebra, and geometry",
     "requirements": ["pytest"],
-    "hidden_tests": [
-      "def test_",
-      "import math"
-    ]
+    "hidden_tests": ["def test_", "import math"]
+  },
+  {
+    "name": "file_indexer",
+    "prompt": "Create a Python file indexer that walks directories, computes file hashes, and outputs a JSON index",
+    "requirements": ["pytest"],
+    "hidden_tests": ["import hashlib", "os.walk"]
+  },
+  {
+    "name": "config_parser",
+    "prompt": "Create a Python configuration parser that reads YAML/JSON/INI formats and validates schemas",
+    "requirements": ["pytest", "pyyaml"],
+    "hidden_tests": ["import yaml", "import json"]
+  },
+  {
+    "name": "rate_limiter",
+    "prompt": "Create a Python rate limiter implementation with token bucket or sliding window algorithm",
+    "requirements": ["pytest"],
+    "hidden_tests": ["class RateLimiter", "def test_rate_limit"]
+  },
+  {
+    "name": "caching_layer",
+    "prompt": "Create a Python caching library with TTL support, LRU eviction, and decorator interface",
+    "requirements": ["pytest"],
+    "hidden_tests": ["functools.lru_cache", "class Cache"]
+  },
+  {
+    "name": "log_analyzer",
+    "prompt": "Create a Python log file analyzer that parses timestamps, counts levels, and generates reports",
+    "requirements": ["pytest"],
+    "hidden_tests": ["import re", "def test_parse"]
   }
 ]

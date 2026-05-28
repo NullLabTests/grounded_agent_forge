@@ -2,7 +2,7 @@ name: Generate Score Badge
 
 on:
   push:
-    branches: [dev]
+    branches: [main]
     paths:
       - 'results.log'
 
