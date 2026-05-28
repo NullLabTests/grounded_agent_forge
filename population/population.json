@@ -110,6 +110,11 @@
     "generation": 0
   },
   {
+    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration",
+    "score": 34.0,
+    "generation": 0
+  },
+  {
     "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration\n\nAdditional requirement: Add stronger modularity requirements",
     "score": 28.0,
     "generation": 9
