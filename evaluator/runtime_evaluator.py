@@ -1,3 +1,18 @@
+"""Execution-grounded validation for generated code.
+
+This module is the core differentiator of Grounded Evolution.
+Instead of scoring prompts by keyword coverage alone, it:
+1. Takes generated project files
+2. Validates syntactic correctness via AST parsing
+3. Runs pytest to verify test pass rates
+4. Lints with flake8 for code quality
+5. Analyzes structural complexity (function/class count)
+6. Returns a composite execution score
+
+This grounds the evolution in *real code quality* rather than
+just text matching.
+"""
+
 import ast
 import os
 import subprocess

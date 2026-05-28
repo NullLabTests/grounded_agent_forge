@@ -1,3 +1,16 @@
+"""Continuous evolution loop with execution-grounded validation.
+
+This is the primary entry point for the Grounded Evolution system.
+Unlike the lexical-only loop (auto_evolve.py), this loop:
+1. Generates actual code from prompts via LLM
+2. Validates generated code by running it (AST, pytest, flake8)
+3. Scores prompts based on real execution outcomes
+4. Runs indefinitely with auto-commit on improvement
+
+This is what makes the evolution "grounded" — fitness is determined
+by real code quality, not just keyword matching.
+"""
+
 import json
 import os
 import random
@@ -124,7 +137,7 @@ def evolve_cycle(cycle_num, generation):
         "total_score": total_score,
         "files_generated": files,
         "metrics": metrics,
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(datetime.UTC).isoformat(),
     }
 
     RUNTIME_LOGS.mkdir(exist_ok=True)

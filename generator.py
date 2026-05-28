@@ -167,7 +167,7 @@ def test_add_and_load():
 def generate_code(prompt, model=None, temperature=None):
     client = _get_client()
     response = client.chat.completions.create(
-        model=model or "mistral-large-latest",
+        model=model or DEFAULT_MODEL,
         messages=[
             {
                 "role": "system",

@@ -1,32 +1,50 @@
+"""Update README status section with latest evolution metrics.
+
+Designed to be called from infinite_research_loop.py after each cycle.
+Updates a small status block at the top of the README without
+disturbing the main documentation content.
+"""
+
+import re
 from pathlib import Path
 from datetime import datetime
 
+
 def beautify(best_score=0, generation=0, population_size=0):
     readme = Path("README.md")
-    existing = readme.read_text() if readme.exists() else ""
+    if not readme.exists():
+        return
 
-    sections = existing.split("---")
-    header = f"""# Grounded Evolution System
+    content = readme.read_text()
 
-**Last Evolution Cycle:** {datetime.utcnow().isoformat()} UTC
-**Generation:** {generation}
-**Best Score:** {best_score}
-**Population Size:** {population_size}
+    status_block = (
+        f"\n> **Last Evolution Cycle:** {datetime.now(datetime.UTC).isoformat()} UTC  \n"
+        f"> **Generation:** {generation}  \n"
+        f"> **Best Score:** {best_score}  \n"
+        f"> **Population Size:** {population_size}  \n"
+    )
 
-## Purpose
+    marker_start = "<!-- EVOLUTION_STATUS_START -->"
+    marker_end = "<!-- EVOLUTION_STATUS_END -->"
+    status_section = (
+        f"{marker_start}\n{status_block}\n{marker_end}"
+    )
 
-This system evolves prompts against **real execution-based benchmarks**.
+    if marker_start in content and marker_end in content:
+        content = re.sub(
+            f"{re.escape(marker_start)}.*?{re.escape(marker_end)}",
+            status_section,
+            content,
+            flags=re.DOTALL,
+        )
+    else:
+        content = content.replace(
+            "## Overview",
+            f"## Current Status\n\n{status_section}\n\n## Overview",
+            1,
+        )
 
-It optimizes:
-- Runtime success
-- Test pass rates
-- Modularity
-- Maintainability
-- Execution correctness
-
----
-"""
-    readme.write_text(header)
+    readme.write_text(content)
 
 
 if __name__ == "__main__":
