@@ -115,6 +115,11 @@
     "generation": 0
   },
   {
+    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration\n\nAdditional requirement: Require async-compatible design patterns",
+    "score": 39.0,
+    "generation": 32
+  },
+  {
     "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration Additional requirement: Improve startup speed and reduce imports",
     "score": 37.0,
     "generation": 39
@@ -175,6 +180,56 @@
     "generation": 4
   },
   {
+    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration\n\nAdditional requirement: Require 90%+ type annotation coverage on all functions",
+    "score": 36.0,
+    "generation": 6
+  },
+  {
+    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration Additional requirement: Add graceful shutdown handling",
+    "score": 36.0,
+    "generation": 7
+  },
+  {
+    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration\n\nAdditional requirement: Require Docker support with multi-stage builds",
+    "score": 36.0,
+    "generation": 9
+  },
+  {
+    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration",
+    "score": 36.0,
+    "generation": 11
+  },
+  {
+    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration\n\nAdditional requirement: Require parameterized tests covering edge cases",
+    "score": 36.0,
+    "generation": 12
+  },
+  {
+    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration",
+    "score": 36.0,
+    "generation": 13
+  },
+  {
+    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration Additional requirement: Require comprehensive tests with pytest",
+    "score": 36.0,
+    "generation": 15
+  },
+  {
+    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration Additional requirement: Add graceful shutdown handling",
+    "score": 36.0,
+    "generation": 17
+  },
+  {
+    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration\n\nAdditional requirement: Require configurable timeout and retry settings",
+    "score": 36.0,
+    "generation": 18
+  },
+  {
+    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration\n\nAdditional requirement: Require graceful degradation on missing dependencies",
+    "score": 36.0,
+    "generation": 27
+  },
+  {
     "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration Additional requirement: Require async support",
     "score": 35.0,
     "generation": 47
@@ -193,60 +248,5 @@
     "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration\n\nAdditional requirement: Add feature flag support",
     "score": 34.0,
     "generation": 13
-  },
-  {
-    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration Additional requirement: Require retry handling with exponential backoff",
-    "score": 34.0,
-    "generation": 14
-  },
-  {
-    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration",
-    "score": 34.0,
-    "generation": 15
-  },
-  {
-    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration\n\nAdditional requirement: Add performance benchmarks",
-    "score": 34.0,
-    "generation": 17
-  },
-  {
-    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration\n\nAdditional requirement: Require API documentation with OpenAPI/Swagger",
-    "score": 34.0,
-    "generation": 19
-  },
-  {
-    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration Additional requirement: Require docstrings on all public functions",
-    "score": 34.0,
-    "generation": 20
-  },
-  {
-    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration Additional requirement: Require cleaner architecture with separation of concerns",
-    "score": 34.0,
-    "generation": 29
-  },
-  {
-    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration Additional requirement: Improve readability with clear naming conventions",
-    "score": 34.0,
-    "generation": 30
-  },
-  {
-    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration\n\nAdditional requirement: Add CI/CD configuration",
-    "score": 34.0,
-    "generation": 35
-  },
-  {
-    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration Additional requirement: Require comprehensive tests with pytest",
-    "score": 34.0,
-    "generation": 40
-  },
-  {
-    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration",
-    "score": 34.0,
-    "generation": 43
-  },
-  {
-    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration\n\nAdditional requirement: Reduce token usage and optimize for efficiency",
-    "score": 34.0,
-    "generation": 45
   }
 ]
