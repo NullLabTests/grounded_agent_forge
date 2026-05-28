@@ -188,14 +188,13 @@ def plot_ablation_convergence(conditions: dict[str, list[dict[str, Any]]]) -> No
 
 def main() -> None:
     """Main entry point."""
+    global ROLLING_WINDOW
     use_ablation: bool = "--ablation" in sys.argv
-    rolling_window: int = ROLLING_WINDOW
+    window: int = ROLLING_WINDOW
     for arg in sys.argv:
         if arg.startswith("--rolling="):
-            rolling_window = int(arg.split("=")[1])
-
-    global ROLLING_WINDOW
-    ROLLING_WINDOW = rolling_window
+            window = int(arg.split("=")[1])
+    ROLLING_WINDOW = window
 
     if use_ablation:
         conditions = load_ablation_runs()

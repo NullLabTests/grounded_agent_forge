@@ -1,10 +1,14 @@
-name: CI
+name: Validate
 
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   lint:
@@ -15,14 +19,51 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install ruff
-      - run: ruff check . --ignore=E501,F821
+      - run: ruff check . --ignore=E501,F821 --statistics
 
-  evaluate:
+  imports:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Quick sanity check
-        run: python -c "from evaluate import evaluate; print('evaluate.py loads OK')"
+      - run: pip install openai
+      - name: Check all modules load
+        run: |
+          for mod in generator population_manager mutation_engine; do
+            echo "=== $mod ==="
+            python -c "import $mod; print('OK')"
+          done
+          for mod in evaluator.runtime_evaluator; do
+            echo "=== $mod ==="
+            python -c "import $mod; print('OK')"
+          done
+      - name: Check scripts parse (no-exec)
+        run: |
+          for script in infinite_research_loop.py run_experiment.py beautify_readme.py \
+                        eval.py auto_evolve.py; do
+            echo "=== $script ==="
+            python -c "compile(open('$script').read(), '$script', 'exec'); print('syntax OK')"
+          done
+
+  experiment_design:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate benchmarks/tasks.json
+        run: |
+          python3 -c "
+import json
+with open('benchmarks/tasks.json') as f:
+    tasks = json.load(f)
+assert len(tasks) >= 3
+for t in tasks:
+    assert 'name' in t
+    assert 'hidden_test_files' in t
+    assert len(t['hidden_test_files']) >= 1
+print(f'{len(tasks)} benchmarks OK')
+"

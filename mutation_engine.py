@@ -110,15 +110,22 @@ def mutate_prompt(prompt: str, benchmark_name: str | None = None) -> tuple[str, 
     """Apply a random mutation to a prompt by appending a requirement.
 
     Returns (mutated_prompt, mutation_description).
+    Falls back to a sensible base prompt if the input is empty or too short.
     """
     mutation: str = _weighted_choice()
-    return f"{prompt}\n\nAdditional requirement: {mutation}", mutation
+    base: str = prompt if prompt and len(prompt.strip()) >= 20 else "Generate code that is clean, modular, and well-tested."
+    return f"{base}\n\nAdditional requirement: {mutation}", mutation
 
 
 def crossover_prompts(prompt_a: str, prompt_b: str) -> str:
-    """Perform single-point crossover between two prompts."""
+    """Perform single-point crossover between two prompts.
+
+    Falls back to the longer prompt if either parent is too short to splice.
+    """
     words_a: list[str] = prompt_a.split()
     words_b: list[str] = prompt_b.split()
+    if len(words_a) < 8 or len(words_b) < 8:
+        return prompt_a if len(words_a) >= len(words_b) else prompt_b
     split_point: int = random.randint(len(words_a) // 4, 3 * len(words_a) // 4)
     return " ".join(words_a[:split_point] + words_b[split_point:])
 
