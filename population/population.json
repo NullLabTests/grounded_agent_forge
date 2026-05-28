@@ -170,6 +170,11 @@
     "generation": 42
   },
   {
+    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration\n\nAdditional requirement: Require parameterized tests covering edge cases",
+    "score": 36.0,
+    "generation": 4
+  },
+  {
     "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration Additional requirement: Require async support",
     "score": 35.0,
     "generation": 47
@@ -243,10 +248,5 @@
     "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration\n\nAdditional requirement: Reduce token usage and optimize for efficiency",
     "score": 34.0,
     "generation": 45
-  },
-  {
-    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration\n\nAdditional requirement: Add input validation using Pydantic or dataclasses",
-    "score": 34.0,
-    "generation": 46
   }
 ]
