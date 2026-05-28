@@ -47,4 +47,19 @@ def beautify(best_score: float = 0, generation: int = 0, population_size: int = 
 
 
 if __name__ == "__main__":
-    beautify()
+    import json
+    pop = Path("population/population.json")
+    if pop.exists():
+        data = json.loads(pop.read_text())
+        if data:
+            best = max(float(d.get("score", 0)) for d in data)
+            beautify(best_score=best, generation=len(data), population_size=len(data))
+        else:
+            beautify()
+    else:
+        import glob
+        txt_files = list(Path("population").glob("*.txt"))
+        if txt_files:
+            beautify(population_size=len(txt_files))
+        else:
+            beautify()

@@ -7,9 +7,9 @@
 [![Status: Active](https://img.shields.io/badge/status-active-success?style=flat-square&logo=github)](https://github.com/NullLabTests/grounded_evolution)
 [![License: MIT](https://img.shields.io/badge/License-MIT-67ac09?style=flat-square)](LICENSE)
 [![Python 3.12+](https://img.shields.io/badge/Python-3.12%2B-007ec6?style=flat-square&logo=python&logoColor=white)](https://python.org)
-[![Generations](https://img.shields.io/badge/Generations-150-8b5cf6?style=flat-square)](#results)
+[![Generations](https://img.shields.io/badge/Generations-163-8b5cf6?style=flat-square)](#results)
 [![Best Score](https://img.shields.io/badge/Best%20Score-862%2F1000-22c55e?style=flat-square)](#results)
-[![Population](https://img.shields.io/badge/Population-150%20prompts-f59e0b?style=flat-square)](#results)
+[![Population](https://img.shields.io/badge/Population-163%20prompts-f59e0b?style=flat-square)](#results)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-8b5cf6?style=flat-square)](CONTRIBUTING.md)
 
 [Overview](#overview) •
@@ -27,10 +27,10 @@
 
 <!-- EVOLUTION_STATUS_START -->
 
-> **Last Evolution Cycle:** 2026-05-28T15:47:04.958439 UTC  
-> **Generation:** 0  
-> **Best Score:** 0  
-> **Population Size:** 0  
+> **Last Evolution Cycle:** 2026-05-28T16:03:22.335068+00:00 UTC  
+> **Generation:** 5  
+> **Best Score:** 96.0  
+> **Population Size:** 5  
 
 <!-- EVOLUTION_STATUS_END -->
 
@@ -394,11 +394,17 @@ git checkout prompt.txt
 
 | Metric | Value |
 |--------|-------|
-| **Generations** | 150 |
-| **Population** | 150 prompts |
+| **Generations** | 163 |
+| **Population** | 163 prompts |
 | **Best Lexical Score** | 862 / 1000 |
 | **Score Range** | 35 → 862 (24.6×) |
 | **Ceiling Progression** | 500 → 1000 |
+| **Grounded Best** | 96.0 / 100 |
+
+> **Note: Lexical Plateau at 862/1000.** The lexical loop has converged — all 40+ signal pools
+> have been exhausted and prompts saturate at 862. Remaining signals (138 points) are too niche
+> for any single prompt to cover. To break through, use the **grounded loop** (execution-based
+> scoring, max 100 points) which rewards code quality, not keyword breadth.
 
 ### Top 10 Prompts
 

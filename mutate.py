@@ -128,8 +128,8 @@ def mutate():
         KEYWORD_BONUS.append(f"\n- {kw}: support, implementation, integration, configuration, management, monitoring, optimization")
 
     strategy = random.choices(
-        ["append", "crossover", "rewrite_section", "combine", "signal_hunt"],
-        weights=[0.2, 0.2, 0.15, 0.15, 0.3],
+        ["append", "crossover", "rewrite_section", "combine", "signal_hunt", "super_merge"],
+        weights=[0.1, 0.15, 0.1, 0.1, 0.25, 0.3],
     )[0]
 
     new_content = content
@@ -161,12 +161,34 @@ def mutate():
         new_content = half1 + "\n" + half2
 
     elif strategy == "signal_hunt":
-        # Add a batch of missing keywords to boost score
         additions = []
         if KEYWORD_BONUS:
             additions = random.sample(KEYWORD_BONUS, min(10, len(KEYWORD_BONUS)))
         additions.append(random.choice(ADDITIONS_POOL))
         new_content = content + "\n=== SIGNAL COVERAGE ===\n" + "\n".join(additions)
+
+    elif strategy == "super_merge":
+        merged_parts = [content]
+        scored = read_scores()
+        top_prompts = sorted(scored, key=lambda x: -x[1]) if scored else []
+        taken = 0
+        for fname, _ in top_prompts:
+            if fname == best_file or taken >= 4:
+                continue
+            fpath = os.path.join("population", fname)
+            if os.path.exists(fpath):
+                with open(fpath) as f:
+                    merged_parts.append(f.read())
+                taken += 1
+        all_lines = []
+        seen = set()
+        for part in merged_parts:
+            for line in part.split("\n"):
+                stripped = line.strip().lower()
+                if stripped not in seen and stripped:
+                    seen.add(stripped)
+                    all_lines.append(line)
+        new_content = "\n".join(all_lines)
 
     new_name = f"prompt_{len(files)+1:03d}.txt"
     with open(os.path.join("population", new_name), "w") as f:

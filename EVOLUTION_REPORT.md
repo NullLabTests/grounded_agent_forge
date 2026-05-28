@@ -4,9 +4,9 @@
 
 | Metric | Value |
 |---|---|
-| Total cycles | ~150 |
+| Total cycles | 163 |
 | Score range | 35 → 862 (24.6× improvement) |
-| Population size | ~150 prompts |
+| Population size | 163 prompts |
 | Evaluation method | 400+ signal lexical scoring |
 | Evolution loops | Lexical + Grounded (dual) |
 
@@ -63,8 +63,16 @@ The grounded loop closes the gap by:
 
 **Lexical and grounded scores are weakly correlated.** The most "impressive" prompts (long, many keywords) often produce the messiest code. The grounded loop acts as a regularizer — rewarding prompts that produce **simple, correct, and tested** output over prompts that read well on paper.
 
-## Next Analysis
+## Lexical Plateau
 
-- Run a Spearman correlation between lexical score and grounded score across the full population
-- Track per-cycle cost (LLM tokens + wall time) to identify regression
-- Archive generated projects from the top-10 grounded prompts for manual review
+After 163 generations and 40+ injected signal pools, the lexical loop has converged at **862/1000**. All 500+ keyword checks have been injected into `evaluate.py`. The remaining 138 points require niche keywords that no single prompt can practically cover without becoming an incoherent keyword salad.
+
+The `super_merge` strategy (added to `mutate.py`) attempts to combine all top-5 prompts into one maximally broad prompt, but even this can't bridge the gap — the signals are inherently contradictory (e.g., language-specific keywords for Python vs JavaScript).
+
+## Next Steps
+
+1. **Run the grounded loop** with an LLM API key set (`LLM_API_KEY`) — this shifts from keyword scoring to execution validation
+2. **Run a Spearman correlation** between lexical score and grounded score across the full population
+3. **Track per-cycle cost** (LLM tokens + wall time) to identify regression
+4. **Archive generated projects** from the top-10 grounded prompts for manual review
+5. **Diversify benchmarks** in `benchmarks/tasks.json` — the current single-benchmark mode limits grounded evolution breadth

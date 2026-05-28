@@ -100,7 +100,7 @@ def inject_new_signals(count=8):
         content = f.read()
 
     # Find the insertion point (before 'scores[f] = round(min(500.0, score), 1)')
-    insert_marker = "scores[f] = round(min(500.0, score), 1)"
+    insert_marker = "scores[f] = round(min(1000.0, score), 1)"
     if insert_marker not in content:
         print("WARN: could not find insertion point in evaluate.py")
         return 0
