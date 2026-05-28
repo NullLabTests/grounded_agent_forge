@@ -63,16 +63,45 @@ The grounded loop closes the gap by:
 
 **Lexical and grounded scores are weakly correlated.** The most "impressive" prompts (long, many keywords) often produce the messiest code. The grounded loop acts as a regularizer — rewarding prompts that produce **simple, correct, and tested** output over prompts that read well on paper.
 
-## Lexical Plateau
+## Lexical Breakthrough
 
-After 163 generations and 40+ injected signal pools, the lexical loop has converged at **862/1000**. All 500+ keyword checks have been injected into `evaluate.py`. The remaining 138 points require niche keywords that no single prompt can practically cover without becoming an incoherent keyword salad.
+The lexical loop was stuck at **862/1000** until a root-cause analysis revealed a bug in `mutate.py`'s `get_missing_keywords` function:
 
-The `super_merge` strategy (added to `mutate.py`) attempts to combine all top-5 prompts into one maximally broad prompt, but even this can't bridge the gap — the signals are inherently contradictory (e.g., language-specific keywords for Python vs JavaScript).
+- **Bug:** Single-keyword conditions (e.g., `if "ollama" in content:`) — 286 out of 592 total — were **completely ignored** because the function only handled `and`/`or` patterns, missing the simple `else` branch.
+- **Impact:** 180 uncovered signals were invisible to the mutation engine, creating an artificial plateau.
+- **Fix:** Added an `else` branch for single-keyword conditions. Combined with the earlier fix (relaxed `len(k) > 3` → `len(k) >= 3` with a short-word blocklist).
+
+### Breakthrough Progression (30 cycles after fix)
+
+| Cycle | Score | Missing signals |
+|-------|-------|----------------|
+| 0 | 896 | 181 |
+| 5 | 914 | 172 |
+| 15 | 932 | 164 |
+| 16 | 950 | 155 |
+| 21 | 968 | 144 |
+| 22 | 986 | 134 |
+| 23 | **1000** | 124 |
+
+6 prompts now score the maximum 1000/1000. Population: 218 prompts.
+
+## Final State
+
+| Metric | Value |
+|---|---|
+| Total cycles | 218 |
+| Score range | 35 → **1000** (28.6× improvement) |
+| Champions at 1000 | 6 |
+| Population size | 218 prompts |
+| Evaluator signals | 592 keyword checks |
+| Ceiling progression | 500 → 862 → 1000 |
+| Evaluation method | 400+ signal lexical scoring (fully capped) |
+| Evolution loops | Lexical (capped) + Grounded (needs API key) |
 
 ## Next Steps
 
-1. **Run the grounded loop** with an LLM API key set (`LLM_API_KEY`) — this shifts from keyword scoring to execution validation
-2. **Run a Spearman correlation** between lexical score and grounded score across the full population
-3. **Track per-cycle cost** (LLM tokens + wall time) to identify regression
-4. **Archive generated projects** from the top-10 grounded prompts for manual review
-5. **Diversify benchmarks** in `benchmarks/tasks.json` — the current single-benchmark mode limits grounded evolution breadth
+1. **Run the grounded loop** with an LLM API key set (`LLM_API_KEY`) — shifts from keyword scoring to execution validation
+2. **Add new signal pools** to `evolve_forever.py` to raise the ceiling beyond 1000
+3. **Run a Spearman correlation** between lexical score and grounded score across the population
+4. **Archive generated projects** from top-scoring grounded prompts for manual review
+5. **Diversify benchmarks** in `benchmarks/tasks.json`

@@ -15,6 +15,11 @@
     "generation": 1
   },
   {
+    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration\n\nAdditional requirement: Add graceful shutdown handling",
+    "score": 53.0,
+    "generation": 2
+  },
+  {
     "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests\n\nAdditional requirement: Add CI/CD configuration",
     "score": 44.0,
     "generation": 0
@@ -28,6 +33,11 @@
     "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration\n\nAdditional requirement: Add error handling with custom exceptions",
     "score": 21.0,
     "generation": 0
+  },
+  {
+    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration\n\nAdditional requirement: Require cleaner architecture with separation of concerns",
+    "score": 15.0,
+    "generation": 1
   },
   {
     "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests",

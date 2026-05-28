@@ -7,9 +7,9 @@
 [![Status: Active](https://img.shields.io/badge/status-active-success?style=flat-square&logo=github)](https://github.com/NullLabTests/grounded_evolution)
 [![License: MIT](https://img.shields.io/badge/License-MIT-67ac09?style=flat-square)](LICENSE)
 [![Python 3.12+](https://img.shields.io/badge/Python-3.12%2B-007ec6?style=flat-square&logo=python&logoColor=white)](https://python.org)
-[![Generations](https://img.shields.io/badge/Generations-163-8b5cf6?style=flat-square)](#results)
-[![Best Score](https://img.shields.io/badge/Best%20Score-862%2F1000-22c55e?style=flat-square)](#results)
-[![Population](https://img.shields.io/badge/Population-163%20prompts-f59e0b?style=flat-square)](#results)
+[![Generations](https://img.shields.io/badge/Generations-218-8b5cf6?style=flat-square)](#results)
+[![Best Score](https://img.shields.io/badge/Best%20Score-1000%2F1000-22c55e?style=flat-square)](#results)
+[![Population](https://img.shields.io/badge/Population-218%20prompts-f59e0b?style=flat-square)](#results)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-8b5cf6?style=flat-square)](CONTRIBUTING.md)
 
 [Overview](#overview) •
@@ -27,10 +27,10 @@
 
 <!-- EVOLUTION_STATUS_START -->
 
-> **Last Evolution Cycle:** 2026-05-28T16:12:51.582020+00:00 UTC  
-> **Generation:** 7  
+> **Last Evolution Cycle:** 2026-05-28T16:15:13.664663+00:00 UTC  
+> **Generation:** 9  
 > **Best Score:** 96.0  
-> **Population Size:** 7  
+> **Population Size:** 9  
 
 <!-- EVOLUTION_STATUS_END -->
 
@@ -394,17 +394,17 @@ git checkout prompt.txt
 
 | Metric | Value |
 |--------|-------|
-| **Generations** | 163 |
-| **Population** | 163 prompts |
-| **Best Lexical Score** | 862 / 1000 |
-| **Score Range** | 35 → 862 (24.6×) |
-| **Ceiling Progression** | 500 → 1000 |
+| **Generations** | 218 |
+| **Population** | 218 prompts |
+| **Best Lexical Score** | **1000 / 1000** |
+| **Score Range** | 35 → 1000 (28.6×) |
+| **Ceiling Progression** | 500 → 862 → 1000 |
 | **Grounded Best** | 96.0 / 100 |
 
-> **Note: Lexical Plateau at 862/1000.** The lexical loop has converged — all 40+ signal pools
-> have been exhausted and prompts saturate at 862. Remaining signals (138 points) are too niche
-> for any single prompt to cover. To break through, use the **grounded loop** (execution-based
-> scoring, max 100 points) which rewards code quality, not keyword breadth.
+> **Note: Lexical Plateau at 862/1000 (now broken).** A bug in `mutate.py`'s `get_missing_keywords`
+> function was ignoring all 286 single-keyword scoring conditions (those without `and`/`or`),
+> blocking 180 uncovered signals. After fix: **896 → 914 → 932 → 950 → 968 → 986 → 1000** in 30 cycles.
+> 6 prompts now score the maximum. The grounded loop remains the next frontier.
 
 ### Top 10 Prompts
 
