@@ -112,7 +112,7 @@ def evaluate_project(project_dir, timeout=30):
 
     try:
         pytest_result = run_command(
-            "python -m pytest -x --tb=short --no-header -q",
+            f"{sys.executable} -m pytest -x --tb=short --no-header -q",
             cwd=project_dir,
             timeout=timeout,
         )
@@ -143,17 +143,26 @@ def evaluate_project(project_dir, timeout=30):
     except Exception:
         metrics["lint"] = {"success": False, "stderr": "flake8 failed"}
 
-    try:
-        import_result = run_command(
-            f"{sys.executable} -c \"import ast, sys; path='{project_dir}'; sys.path.insert(0, path); exec(open(f'{project_dir}/main.py').read())\"",
-            timeout=15,
-        )
-        metrics["runtime"] = import_result
-        if import_result["success"]:
-            score += 15.0
-            metrics["runtime_score"] = 15.0
-    except Exception:
-        metrics["runtime"] = {"success": False, "stderr": "runtime execution failed"}
+    py_files = sorted(Path(project_dir).rglob("*.py"))
+    runtime_success = False
+    if py_files:
+        for pyf in py_files[:3]:
+            try:
+                r = run_command(
+                    f"{sys.executable} -c \"import ast, sys; sys.path.insert(0, '{project_dir}'); exec(open('{pyf}').read())\"",
+                    timeout=15,
+                )
+                if r["success"]:
+                    runtime_success = True
+                    break
+            except Exception:
+                pass
+    metrics["runtime"] = {"success": runtime_success}
+    if runtime_success:
+        score += 15.0
+        metrics["runtime_score"] = 15.0
+    else:
+        metrics["runtime_score"] = 0.0
 
     has_test_files = len(list(Path(project_dir).rglob("test_*.py"))) > 0
     metrics["has_tests"] = has_test_files

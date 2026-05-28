@@ -1,24 +1,35 @@
+"""LLM-based code generation from evolved prompts.
+
+Supports OpenAI-compatible APIs (OpenAI, Mistral, local LLMs via Ollama).
+Configure via environment variables — never hardcode API keys.
+"""
+
 import os
 import re
-import json
 from pathlib import Path
-
-import random
 
 _openai_client = None
 
-
-MISTRAL_API_KEY = "Zbhf22T4Db2ln3k1BL8zme5DCWaloVj9"
-MISTRAL_BASE_URL = "https://api.mistral.ai/v1"
+DEFAULT_BASE_URL = os.environ.get(
+    "LLM_BASE_URL",
+    "https://api.mistral.ai/v1",
+)
+DEFAULT_MODEL = os.environ.get("LLM_MODEL", "mistral-large-latest")
 
 
 def _get_client():
     global _openai_client
     if _openai_client is None:
         from openai import OpenAI
+        api_key = os.environ.get("LLM_API_KEY")
+        if not api_key:
+            raise ValueError(
+                "LLM_API_KEY environment variable not set. "
+                "Export it or set it in your .env file."
+            )
         _openai_client = OpenAI(
-            api_key=MISTRAL_API_KEY,
-            base_url=MISTRAL_BASE_URL,
+            api_key=api_key,
+            base_url=DEFAULT_BASE_URL,
         )
     return _openai_client
 
@@ -155,35 +166,53 @@ def test_add_and_load():
 
 def generate_code(prompt, model=None, temperature=None):
     client = _get_client()
-    if client:
-        response = client.chat.completions.create(
-            model=model or "gpt-4.1-mini",
-            messages=[
-                {
-                    "role": "system",
-                    "content": "You are an autonomous software architect. Generate clean executable Python projects. Output each file in a markdown code block with the filename as the language tag (e.g. ```main.py). Include a README.md and requirements.txt.",
-                },
-                {"role": "user", "content": prompt},
-            ],
-            temperature=temperature or 0.8,
-        )
-        return response.choices[0].message.content
+    response = client.chat.completions.create(
+        model=model or "mistral-large-latest",
+        messages=[
+            {
+                "role": "system",
+                "content": "You are an autonomous software architect. Generate clean executable Python projects. Output each file in a markdown code block with the filename as the language tag (e.g. ```main.py). Include a README.md and requirements.txt.",
+            },
+            {"role": "user", "content": prompt},
+        ],
+        temperature=temperature or 0.8,
+    )
+    return response.choices[0].message.content
 
-    template = random.choice(TEMPLATES)
-    result_parts = []
-    for filename, code in template.items():
-        result_parts.append(f"```{filename}\n{code}```")
-    return "\n\n".join(result_parts)
+
+LANG_MAP = {
+    "python": "main.py",
+    "py": "main.py",
+    "bash": "run.sh",
+    "shell": "run.sh",
+    "yaml": "config.yaml",
+    "yml": "config.yaml",
+    "json": "config.json",
+    "toml": "pyproject.toml",
+    "text": "README.md",
+    "markdown": "README.md",
+    "md": "README.md",
+    "dockerfile": "Dockerfile",
+    "gitignore": ".gitignore",
+    "ini": "config.ini",
+    "cfg": "setup.cfg",
+}
 
 
 def parse_code_blocks(content):
     blocks = []
     pattern = r"```(\w+(?:\.\w+)?)\n(.*?)```"
     matches = re.findall(pattern, content, re.DOTALL)
-    for filename, code in matches:
+    file_counter = 0
+    for tag, code in matches:
         code = code.strip()
-        if code:
-            blocks.append({"filename": filename, "code": code})
+        if not code:
+            continue
+        filename = tag if "." in tag else LANG_MAP.get(tag)
+        if not filename:
+            file_counter += 1
+            filename = f"module_{file_counter}.py" if "python" in content[:content.find(f"```{tag}") + len(tag) + 100].lower() else f"file_{file_counter}.txt"
+        blocks.append({"filename": filename, "code": code})
     return blocks
 
 

@@ -7,6 +7,9 @@ import time
 from datetime import datetime
 from pathlib import Path
 
+sys.stdout.reconfigure(line_buffering=True)
+sys.stderr.reconfigure(line_buffering=True)
+
 from generator import generate_code, write_project_files
 from mutation_engine import mutate_prompt, crossover_prompts
 from population_manager import (
@@ -132,7 +135,7 @@ def evolve_cycle(cycle_num, generation):
 
     try:
         subprocess.run(
-            ["python", "beautify_readme.py"],
+            [sys.executable, "beautify_readme.py"],
             capture_output=True,
             timeout=10,
         )
