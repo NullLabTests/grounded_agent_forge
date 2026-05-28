@@ -20,6 +20,16 @@
     "generation": 0
   },
   {
+    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration\n\nAdditional requirement: Require docstrings on all public functions",
+    "score": 23.0,
+    "generation": 0
+  },
+  {
+    "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests Additional requirement: Add CI/CD configuration\n\nAdditional requirement: Add error handling with custom exceptions",
+    "score": 21.0,
+    "generation": 0
+  },
+  {
     "prompt": "Generate clean production-grade Python software with modular structure, type hints, and comprehensive tests",
     "score": 0,
     "generation": 0

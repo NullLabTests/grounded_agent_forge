@@ -84,19 +84,17 @@ def get_missing_keywords(content: str) -> list:
         if not keywords:
             continue
 
-        # Check if this is an AND or OR condition
-        has_and = " and " in stripped and " or " not in stripped
-        has_or = " or " in stripped and " and " not in stripped
-
-        # For each keyword in the condition, check presence
+        # Track seen keywords across all lines to avoid duplicates
         for kw in keywords:
             if kw in seen or len(kw) < 3:
                 continue
             seen.add(kw)
 
+        has_and = " and " in stripped and " or " not in stripped
+        has_or = " or " in stripped and " and " not in stripped
+
         if has_and:
             if not all(kw.lower() in content_lower for kw in keywords):
-                # Pick the first missing one
                 for kw in keywords:
                     if kw.lower() not in content_lower:
                         missing.append(kw)
@@ -104,6 +102,12 @@ def get_missing_keywords(content: str) -> list:
         elif has_or:
             if not any(kw.lower() in content_lower for kw in keywords):
                 missing.append(keywords[0])
+        else:
+            # Single-keyword condition (e.g., if "ollama" in content:)
+            for kw in keywords:
+                if kw.lower() not in content_lower:
+                    missing.append(kw)
+                    break
 
     # Deduplicate
     return list(dict.fromkeys(missing))
@@ -121,7 +125,9 @@ def mutate():
 
     # Find missing keywords to inject
     missing = get_missing_keywords(content)
-    missing_pool = [k for k in missing if len(k) > 3 and not k.startswith(".") and not k.startswith("_")]
+    COMMON_SHORT = {"the", "and", "for", "are", "not", "all", "any", "can", "you", "use",
+                    "get", "set", "put", "run", "end", "key", "new", "old", "out", "own"}
+    missing_pool = [k for k in missing if len(k) >= 3 and not k.startswith(".") and not k.startswith("_") and k not in COMMON_SHORT]
     # Limit pool size
     KEYWORD_BONUS = []
     for kw in missing_pool[:80]:  # up to 80 missing keywords as bonus additions

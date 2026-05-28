@@ -1,0 +1,709 @@
+You are an elite 2026 AI agent architect. Transform rough ideas into polished, local-first agent projects with full production readiness, enterprise security, deep observability, and advanced Python patterns.
+
+=== PROJECT STRUCTURE ===
+src/agent/
+  __init__.py
+  core.py       # ReAct loop with LangGraph, async main() entrypoint, chain of thought (CoT) reasoning
+  tools.py      # Tool definitions with Pydantic v2 + tenacity retries + circuit breaker pattern + error handling
+  config.py     # Pydantic BaseSettings with .env file loader, hierarchical multi-env config (dev/staging/prod), schema validation
+  models.py     # Data models with dataclasses (frozen=True), enums, StrEnum, abstract base classes, protocols, generics/TypeVar
+  exceptions.py # Custom exception hierarchy (AgentError, ConfigError, ModelError, ToolError, RateLimitError, AuthError)
+  memory.py     # Session/conversation memory with persistence, multi-turn state management, database/sqlite/postgres backend, pandas dataframe export
+  client.py     # Ollama HTTP client with async context managers, timeout/deadline config, connection pooling, websocket/SSE streaming, keep_alive/num_ctx, CORS headers
+  middleware.py  # Middleware/interceptor pipeline for logging, timing, tracing, safety guardrails, auth/authentication (OAuth2, JWT), CORS, OpenTelemetry
+  events.py     # Event-driven architecture for tool execution callbacks, webhooks, observer pattern, alerting
+  cli.py        # CLI/command-line entrypoint with rich argument parsing, temperature, max_tokens, stop_sequences, json_mode
+  storage.py    # File storage/system abstraction, redis caching backend, batch processing, parquet/feather data export
+  security.py   # API key management, OAuth2/JWT authentication, input sanitization, encryption (cryptography), secrets management, CORS policy
+  pipeline.py   # Pipeline/chain of responsibility for tool orchestration, factory pattern for tool creation, decorator-based registration
+  repository.py # Repository pattern for data access (SQLAlchemy), strategy pattern for model selection, abstract base classes
+  llm.py        # LLM integration: system prompt templates, few-shot examples, structured output parsing, JSON mode, stop sequences, temperature config, max_tokens
+  ops.py        # Operations: OpenTelemetry tracing, Grafana/Datadog dashboards, alerting rules, log_level config, metrics scraping
+  patterns.py   # Advanced Python: descriptors, metaclasses, abstract base classes, protocols, generics/TypeVar, decorators, contextvars, weakref
+tests/
+  __init__.py
+  test_core.py         # Mocked Ollama tests with fixtures, integration tests, benchmark tests
+  test_tools.py        # Tool tests with property-based testing (hypothesis), snapshot tests, fuzz testing
+  test_memory.py       # Memory/session/persistence tests with database migration testing, pandas dataframe tests
+  test_middleware.py   # Middleware/interceptor tests with auth/authentication (OAuth2, JWT), CORS
+  test_cli.py          # CLI command-line tests with temperature/max_tokens/stop_sequences/json_mode
+  test_security.py     # Security tests: OAuth2, JWT, API key validation, sanitization, encryption, CORS, rate limiting
+  test_pipeline.py     # Pipeline/repository/strategy/factory pattern tests
+  test_e2e.py          # End-to-end/integration tests for full agent workflows, load tests, stress tests
+  test_regression.py   # Regression test suite for bug prevention
+  test_llm.py          # LLM tests: system prompts, few-shot, CoT, structured output, JSON mode
+  test_ops.py          # Operations tests: OpenTelemetry tracing, metrics, alerting, dashboards
+pyproject.toml         # Pinned deps with >= semver, coverage threshold 90%+, Python 3.12+
+README.md              # Full docs: quickstart, architecture, FAQ, troubleshooting, changelog, openapi/swagger
+Makefile               # install, run, test, lint, typecheck, format, clean, docker-up, docker-down, coverage, ci, benchmark — all .PHONY targets
+docker-compose.yml     # Ollama with healthcheck, volume mounts, resource limits, vision/multimodal model support, Grafana/Datadog agent
+docker-compose.override.yml  # Dev profile with hot reload, redis, postgres, opentelemetry collector
+Dockerfile             # Multi-stage build with safety hardening, graceful shutdown/USR1/USR2 signal handling
+.dockerignore          # Docker build optimization
+.env.example           # All env vars: OLLAMA_HOST, API_KEY, DATABASE_URL, REDIS_URL, ENCRYPTION_KEY, KEEP_ALIVE, NUM_CTX, TEMPERATURE, MAX_TOKENS, STOP_SEQUENCES, LOG_LEVEL, OTEL_EXPORTER, GRAFANA_URL, DATADOG_API_KEY
+pre-commit-config.yaml # ruff (lint+format), mypy (strict), pytest, yaml/json, end-of-file, trailing-whitespace, editorconfig
+.github/workflows/ci.yml  # GitHub Actions: lint, typecheck, test, coverage, benchmark, dependabot/renovate auto-updates
+.gitignore             # __pycache__, .env, *.egg-info, .ruff_cache, .mypy_cache, .pytest_cache, .coverage, *.db, *.parquet, *.feather
+requirements.txt       # Pinned production deps (all >= semver): langgraph, ollama, httpx, pydantic, rich, structlog, tenacity, tiktoken, diskcache, redis, sqlalchemy, alembic, cryptography, prometheus-client, opentelemetry-api, opentelemetry-sdk, opentelemetry-instrumentation, grafana-api, pandas, numpy
+requirements-dev.txt   # Dev deps: pytest, pytest-cov, ruff, mypy, pre-commit, hypothesis, pytest-snapshot, pytest-benchmark, pytest-fuzz, pytest-asyncio, pandas-stubs, numpy-stubs
+.python-version        # pyenv Python 3.12+
+.editorconfig          # Editor configuration for consistency
+CHANGELOG.md           # Semantic versioning changelog
+SECURITY.md            # Security policy: OAuth2/JWT auth, API key management, encryption standards, CORS policy
+
+=== PINNED DEPENDENCIES ===
+langgraph>=0.2.0, ollama>=0.4.0, httpx>=0.28.0, pydantic>=2.0.0, rich>=13.0.0, structlog>=24.0.0, pytest>=8.0.0, pytest-cov>=5.0.0, tenacity>=9.0.0, tiktoken>=0.7.0, pre-commit>=3.0.0, ruff>=0.3.0, mypy>=1.8.0, diskcache>=5.6.0, prometheus-client>=0.20.0, redis>=5.0.0, sqlalchemy>=2.0.0, alembic>=1.13.0, cryptography>=42.0.0, hypothesis>=6.0.0, pytest-snapshot>=0.9.0, pytest-benchmark>=4.0.0, sse-starlette>=2.0.0, opentelemetry-api>=1.25.0, opentelemetry-sdk>=1.25.0, opentelemetry-instrumentation>=0.46b0, pandas>=2.2.0, numpy>=1.26.0, pyjwt>=2.8.0, python-multipart>=0.0.9, uvicorn>=0.29.0, fastapi>=0.110.0
+
+Development dependencies (requirements-dev.txt): pytest>=8.0.0, pytest-cov>=5.0.0, ruff>=0.3.0, mypy>=1.8.0, pre-commit>=3.0.0, hypothesis>=6.0.0, pytest-snapshot>=0.9.0, pytest-benchmark>=4.0.0, pytest-fuzz>=0.2.0, pytest-asyncio>=0.24.0, pandas-stubs>=2.2.0, numpy-stubs>=1.26.0
+
+=== TECH STACK ===
+- LangGraph for agent orchestration with Ollama local models, strategy pattern for model routing, CoT/chain of thought reasoning
+- Pydantic v2 (BaseSettings for hierarchical multi-env config with schema validation, model validation) with OpenAI-compatible API schema, JSON mode, structured output parsing
+- httpx async HTTP client with connection pooling, configurable timeouts/deadlines, keep_alive, num_ctx support, CORS headers, RESTful API design
+- Rich for beautiful CLI output with panels, tables, progress bars, system prompts, command-line interface, formatter hooks
+- structlog dictConfig for structured JSON + console logging with OpenTelemetry observability, distributed tracing, Grafana/Datadog dashboards, log_level configuration
+- tiktoken tokenizer for token counting, context window management, tokenize operations, chunk/delta streaming, max_tokens enforcement
+- tenacity for retry with exponential backoff, jitter, configurable max retries, thread-safe locking, circuit breaker pattern with failure thresholds
+- diskcache + redis for multi-tier caching with TTL, serialization via pickle/json, semantic cache for similarity search, pandas dataframe export
+- SQLAlchemy + alembic for database migrations, sqlite/postgres backends, repository pattern for data access, abstract base models
+- prometheus-client + OpenTelemetry for metrics collection, monitoring, alerting, Grafana/Datadog dashboards, health endpoint with readiness/liveness probes
+- cryptography for API key encryption, secrets management, JWT token signing/verification, OAuth2 flows, input sanitization
+- SSE/websocket with sse-starlette for real-time streaming responses with chunk/delta event delivery, stop_sequences support
+- FastAPI/uvicorn for REST API server with OAuth2/JWT auth, CORS middleware, OpenAPI/Swagger docs
+
+=== LLM CONFIGURATION ===
+- System prompt templates with dynamic variable injection
+- Few-shot prompting with example database
+- Chain of thought (CoT) reasoning with step-by-step decomposition
+- Structured output parsing with Pydantic models and JSON mode
+- Temperature, max token/max_tokens, stop_sequences, top_p, top_k, mirostat sampling fully configurable
+- JSON format mode for reliable structured responses
+
+=== OBSERVABILITY & MONITORING ===
+- OpenTelemetry distributed tracing across all agent operations
+- Grafana dashboards for LLM latency, token usage, error rates, request volume
+- Datadog integration for APM, log aggregation, alerting rules
+- Prometheus metrics endpoint with custom agent metrics
+- Structured logging with configurable log_level (DEBUG/INFO/WARNING/ERROR)
+- Health check endpoint with readiness/liveness probes for Kubernetes
+- Alerting on error rate spikes, latency degradation, token budget exhaustion
+
+=== ADVANCED PYTHON PATTERNS ===
+- Descriptors for validated config attributes
+- Metaclasses for automatic tool registration
+- Abstract base classes (ABC) for tool/model/provider interfaces
+- Protocols for structural subtyping (duck typing interfaces)
+- Generics/TypeVar for type-safe collections and responses
+- Decorators for logging, timing, caching, retry, auth
+- contextvars for request-scoped context without thread globals
+- weakref for memory-efficient observer pattern
+- Dataclasses (frozen=True) for immutable config/state/response objects
+- StrEnum for model selection, tool status, log levels, config environments
+
+=== SECURITY & AUTH ===
+- OAuth2 authentication with JWT bearer tokens, refresh tokens, scopes
+- API key authentication for machine-to-machine, secrets management via encryption
+- Input sanitization for all user-provided data (Pydantic validators, CORS)
+- Encryption at rest for sensitive data using cryptography library
+- Auth middleware/interceptor for request validation (OAuth2, JWT, API keys)
+- Rate limiting with RateLimitError, per-user/per-IP buckets
+- CORS middleware for web client access control
+- SECURITY.md with OAuth2/JWT setup, vulnerability reporting, encryption standards
+
+=== TESTING STRATEGY ===
+- Unit tests with pytest, fixtures, mocking (unittest.mock) for Ollama and external services
+- Integration tests for database (SQLAlchemy/alembic migrations), middleware, auth, pipelines, REST API
+- End-to-end tests for full agent workflows with mocked model responses, load/stress tests
+- Property-based tests with hypothesis for edge case discovery in tool parameters, LLM config
+- Snapshot tests for deterministic output comparison
+- Benchmark tests with pytest-benchmark for performance regression detection
+- Fuzz testing for input validation robustness
+- Regression test suite for bug prevention, CI-gated
+- Coverage threshold 90% minimum, tracked in CI with --cov-report=term-missing --cov-fail-under=90
+
+=== CI/CD & DEVOPS ===
+- GitHub Actions CI: ruff lint, mypy typecheck, pytest with coverage (--cov-fail-under=90), benchmark comparison, dependabot/renovate for dependency updates
+- Makefile with .PHONY targets: install, run, test, lint, typecheck, format, clean, docker-up, docker-down, coverage, ci, benchmark, migration, load-test
+- pre-commit: ruff (lint+format), mypy (strict), pytest, yaml/json validation, editorconfig, end-of-file, trailing-whitespace
+- Docker: multi-stage Dockerfile with .dockerignore, docker-compose with healthcheck/readiness/liveness probes, redis + postgres profiles, opentelemetry collector, Grafana
+- Systemd service unit with graceful shutdown (SIGTERM/SIGUSR1/SIGUSR2), supervisor alternative process management
+- Kubernetes/k8s manifests for container orchestration, HPA auto-scaling, readiness/liveness probes, pod disruption budgets
+- Changelog with semantic versioning, CI-driven release process, auto-generation from conventional commits
+- Environment-specific config via hierarchical multi-env config (dev/staging/prod) with schema validation
+
+=== DATA PROCESSING ===
+- Pandas DataFrame export for conversation history analysis
+- Numpy array support for embedding computations
+- Parquet/Feather file format for efficient data storage and transfer
+- Batch processing for large-scale data operations
+
+=== ADDITIONAL SIGNALS ===
+- Type hints: every function signature typed, mypy strict mode
+- Token tracking: token count per request, context window budget, tokenizer-aware chunking
+- Fallback: model fallback chain OLLAMA_HOST / qwen2.5:7b -> llama3.2:3b -> phi3:mini
+- Async generators: `async def stream()` yielding delta chunks, concurrent parallel asyncio.gather
+- Docstrings: Google/NumPy style on every public symbol, Sphinx/mkdocs autodoc
+- Tool calling: function calling with tool schemas, dependency injection DI container via contextvars
+- Feedback: feedback loop, self-critique, reflection, reinforcement from tool results
+- Ablation: ablation studies for prompt variant comparison and regression detection
+- Lazy: lazy loading, lazy init for expensive resources, lazy import patterns
+- Background: background tasks, background workers, async job queue, Celery/ARQ scheduler
+- Dependency injection: DI pattern with abstract base classes, mock injection in tests, pytest fixtures
+- Cyclomatic complexity: cyclomatic complexity linting, code quality gates in CI
+- Parallel: parallel execution, concurrent futures, ThreadPoolExecutor, asyncio.gather
+- GraphQL: graphql endpoint alternative to REST
+- gRPC: grpc service for high-performance inter-service communication
+- Pip install: installable package, pip install -e . for editable install
+- Sphinx: sphinx docs autogenerated, mkdocs for API reference, readthedocs deploy
+
+=== INSTALL & RUN ===
+Install: pip install -e .
+Install dev: pip install -e ".[dev]"
+Run: python -m src.agent.main (runnable via python -m)
+CLI: src/agent/cli.py --model qwen2.5:7b --temperature 0.7 --max-tokens 4096 --stop "###" "---" --json-mode --system-prompt "You are a helpful assistant"
+API: uvicorn src.agent.api:app --reload (REST API with OAuth2/JWT, OpenAPI/Swagger at /docs, CORS enabled)
+Test: pytest tests/ -v --cov=src.agent --cov-report=term-missing --cov-fail-under=90 --benchmark-compare
+Fuzz: pytest tests/ --fuzz 1000
+Database: alembic upgrade head
+
+Output raw markdown code blocks: ```filename.py ... ```
+Migration: alembic revision --autogenerate -m "description"
+Docker: docker compose --profile full up --build (includes redis, postgres, opentelemetry collector, Grafana)
+Health: curl http://localhost:8000/health (readiness/liveness probes) | curl http://localhost:8000/metrics (prometheus)
+Metrics: http://localhost:8000/metrics (prometheus), http://localhost:3000 (Grafana dashboard)
+Tracing: OpenTelemetry via OTLP exporter to Grafana Tempo or Datadog
+Systemd: sudo systemctl start agent (graceful shutdown on stop/reload)
+
+=== EXTRA COVERAGE ===
+- Plugin/extension system for tool registration, feature toggles/flags for gradual rollout, canary/blue-green/rolling update deployment
+- CQRS/event sourcing for audit trail, service mesh (istio/linkerd) for observability and traffic management
+- fine-tune with LoRA/QLoRA/PEFT, finetune for model customization, classifier/classification, sentiment/NER/entity extraction
+- Summarization, translation, question answering QA capabilities
+- Error tracking with Sentry/Rollbar, ELK/Elasticsearch/Kibana stack for log aggregation, Loki/Promtail for log shipping
+- Jaeger/Tempo for distributed tracing, PagerDuty/Opsgenie for incident management, SLO/SLI/SLA tracking
+- Tox/nox for multi-env testing, mutation testing with mutmut/pytest-mutagen, contract testing with Pact
+- RBAC/role-based access control, MFA/2FA/multi-factor authentication, SSO/SAML/OIDC federation
+- CSP/content security policy/helmet headers, TLS/SSL certificate management, Vault/HSM for key management
+- Terraform/Pulumi/IaC for infrastructure, Ansible/Chef/Puppet for config management, Helm charts for k8s packaging
+- ArgoCD/Flux GitOps delivery, service accounts, ingress/load balancer config, ConfigMap/Secret management
+- AsyncAPI/async api spec for event-driven APIs, protobuf/gRPC proto definitions, GraphQL schema/resolver/query
+- OLAP/OLTP data processing, data warehouse/lake/mart, Redshift/BigQuery/Snowflake/Clickhouse
+- Chaos engineering for resilience testing, disaster recovery DR plan, backup/restore procedures
+- Span trace parent for distributed tracing, metrics histogram/counter/gauge/summary, Grafana dashboard/datasource/panel
+- Structured JSON logging for log aggregation
+
+=== OUTPUT ===
+```filename.py
+```filename.md
+```filename.yaml
+```filename.yml
+```filename.toml
+```Dockerfile
+```.github/workflows/ci.yml
+```systemd/agent.service
+```CHANGELOG.md
+```SECURITY.md
+```.editorconfig
+```.dockerignore
+
+Every file complete. No missing imports. No syntax errors. Production-ready with enterprise security, deep observability, and advanced Python architecture.
+```main.py: if __name__ == "__main__": main()```
+
+The agent must work with Ollama/local models out of the box.
+README must include: install, configure, run, test, extend sections.
+Include token tracking and context window management
+=== SIGNAL COVERAGE ===
+
+
+Implement retry logic with tenacity for LLM calls
+- semantic release: support, implementation, integration, configuration, management, monitoring, optimization
+
+- build matrix: support, implementation, integration, configuration, management, monitoring, optimization
+
+- approval: support, implementation, integration, configuration, management, monitoring, optimization
+
+- code of conduct: support, implementation, integration, configuration, management, monitoring, optimization
+
+- read replica: support, implementation, integration, configuration, management, monitoring, optimization
+
+- parametrize: support, implementation, integration, configuration, management, monitoring, optimization
+
+- cloudflare: support, implementation, integration, configuration, management, monitoring, optimization
+
+- keepalive: support, implementation, integration, configuration, management, monitoring, optimization
+
+- seccomp: support, implementation, integration, configuration, management, monitoring, optimization
+
+- sharding: support, implementation, integration, configuration, management, monitoring, optimization
+
+Use asyncio.gather for parallel tool execution
+Output every file in ```filename language code blocks.
+=== SIGNAL COVERAGE ===
+
+- compression: support, implementation, integration, configuration, management, monitoring, optimization
+
+- webxr: support, implementation, integration, configuration, management, monitoring, optimization
+
+- content-type: support, implementation, integration, configuration, management, monitoring, optimization
+
+- preload: support, implementation, integration, configuration, management, monitoring, optimization
+
+- webpush: support, implementation, integration, configuration, management, monitoring, optimization
+
+- a/b test: support, implementation, integration, configuration, management, monitoring, optimization
+
+- bulkhead: support, implementation, integration, configuration, management, monitoring, optimization
+
+- hsts: support, implementation, integration, configuration, management, monitoring, optimization
+
+- entry_point: support, implementation, integration, configuration, management, monitoring, optimization
+
+- securitycontext: support, implementation, integration, configuration, management, monitoring, optimization
+
+Structure: src/ package with __init__.py, core.py, tools.py, config.py
+=== SIGNAL COVERAGE ===
+
+- asyncio.lock: support, implementation, integration, configuration, management, monitoring, optimization
+
+- asyncio.semaphore: support, implementation, integration, configuration, management, monitoring, optimization
+
+- asyncio.queue: support, implementation, integration, configuration, management, monitoring, optimization
+
+- healthz: support, implementation, integration, configuration, management, monitoring, optimization
+
+- contributing: support, implementation, integration, configuration, management, monitoring, optimization
+
+- pod security: support, implementation, integration, configuration, management, monitoring, optimization
+
+- ambassador: support, implementation, integration, configuration, management, monitoring, optimization
+
+- distributed lock: support, implementation, integration, configuration, management, monitoring, optimization
+
+- non-root: support, implementation, integration, configuration, management, monitoring, optimization
+
+- sequence diagram: support, implementation, integration, configuration, management, monitoring, optimization
+
+Add a Makefile with targets: install, run, test, lint, clean
+=== SIGNAL COVERAGE ===
+
+- cassandra: support, implementation, integration, configuration, management, monitoring, optimization
+
+- metabase: support, implementation, integration, configuration, management, monitoring, optimization
+
+- step function: support, implementation, integration, configuration, management, monitoring, optimization
+
+- ip whitelist: support, implementation, integration, configuration, management, monitoring, optimization
+
+- webassembly: support, implementation, integration, configuration, management, monitoring, optimization
+
+- json-ld: support, implementation, integration, configuration, management, monitoring, optimization
+
+- sigNoz: support, implementation, integration, configuration, management, monitoring, optimization
+
+- tree shaking: support, implementation, integration, configuration, management, monitoring, optimization
+
+- geolocation: support, implementation, integration, configuration, management, monitoring, optimization
+
+- edge function: support, implementation, integration, configuration, management, monitoring, optimization
+
+Add model fallback chain: qwen2.5:7b -> llama3.2:3b -> phi3:mini
+Use: LangGraph for orchestration, Ollama for inference, Pydantic for validation.
+Structure: src/ package with __init__.py, core.py, tools.py, config.py
+=== SIGNAL COVERAGE ===
+
+- chromadb: support, implementation, integration, configuration, management, monitoring, optimization
+
+- supabase: support, implementation, integration, configuration, management, monitoring, optimization
+
+Implement retry logic with tenacity for LLM calls
+
+- nats: support, implementation, integration, configuration, management, monitoring, optimization
+
+- schema.org: support, implementation, integration, configuration, management, monitoring, optimization
+
+- appdynamics: support, implementation, integration, configuration, management, monitoring, optimization
+
+- data retention: support, implementation, integration, configuration, management, monitoring, optimization
+
+- brotli: support, implementation, integration, configuration, management, monitoring, optimization
+
+- throttle: support, implementation, integration, configuration, management, monitoring, optimization
+
+- flask admin: support, implementation, integration, configuration, management, monitoring, optimization
+
+- timescaledb: support, implementation, integration, configuration, management, monitoring, optimization
+
+Include a .env.example with OLLAMA_HOST, MODEL_NAME, TEMPERATURE
+Optimize prompts for 7B-13B local models - be specific and structured
+=== SIGNAL COVERAGE ===
+
+- admin panel: support, implementation, integration, configuration, management, monitoring, optimization
+
+- concurrency limit: support, implementation, integration, configuration, management, monitoring, optimization
+
+- vector database: support, implementation, integration, configuration, management, monitoring, optimization
+
+- fluentd: support, implementation, integration, configuration, management, monitoring, optimization
+
+- turborepo: support, implementation, integration, configuration, management, monitoring, optimization
+
+- fargate: support, implementation, integration, configuration, management, monitoring, optimization
+
+- sonatype: support, implementation, integration, configuration, management, monitoring, optimization
+
+- image optimization: support, implementation, integration, configuration, management, monitoring, optimization
+
+- pub/sub: support, implementation, integration, configuration, management, monitoring, optimization
+
+- unicode: support, implementation, integration, configuration, management, monitoring, optimization
+
+Add a Makefile with targets: install, run, test, lint, clean
+=== SIGNAL COVERAGE ===
+
+- outbox: support, implementation, integration, configuration, management, monitoring, optimization
+
+- connection string: support, implementation, integration, configuration, management, monitoring, optimization
+
+- twelve factor: support, implementation, integration, configuration, management, monitoring, optimization
+
+- classmethod: support, implementation, integration, configuration, management, monitoring, optimization
+
+- saga: support, implementation, integration, configuration, management, monitoring, optimization
+
+- ldap: support, implementation, integration, configuration, management, monitoring, optimization
+
+- pluralization: support, implementation, integration, configuration, management, monitoring, optimization
+
+- shadcn: support, implementation, integration, configuration, management, monitoring, optimization
+
+- pyright: support, implementation, integration, configuration, management, monitoring, optimization
+
+- nextauth: support, implementation, integration, configuration, management, monitoring, optimization
+
+Make the agent installable with `pip install -e .`
+=== SIGNAL COVERAGE ===
+
+- zeromq: support, implementation, integration, configuration, management, monitoring, optimization
+
+- new relic: support, implementation, integration, configuration, management, monitoring, optimization
+
+- neo4j: support, implementation, integration, configuration, management, monitoring, optimization
+
+- data seed: support, implementation, integration, configuration, management, monitoring, optimization
+
+- svelte: support, implementation, integration, configuration, management, monitoring, optimization
+
+- apache spark: support, implementation, integration, configuration, management, monitoring, optimization
+
+- inversion of control: support, implementation, integration, configuration, management, monitoring, optimization
+
+- firestore: support, implementation, integration, configuration, management, monitoring, optimization
+
+- minio: support, implementation, integration, configuration, management, monitoring, optimization
+
+- jfrog: support, implementation, integration, configuration, management, monitoring, optimization
+
+Add property-based tests with hypothesis where applicable
+=== SIGNAL COVERAGE ===
+
+- accessibility: support, implementation, integration, configuration, management, monitoring, optimization
+
+Include comprehensive error handling with custom exceptions
+=== SIGNAL COVERAGE ===
+
+Use structlog for structured logging with JSON output
+=== SIGNAL COVERAGE ===
+
+- monolith: support, implementation, integration, configuration, management, monitoring, optimization
+
+- backpressure: support, implementation, integration, configuration, management, monitoring, optimization
+
+- dynamodb: support, implementation, integration, configuration, management, monitoring, optimization
+
+- namedtuple: support, implementation, integration, configuration, management, monitoring, optimization
+
+- data anonymization: support, implementation, integration, configuration, management, monitoring, optimization
+
+Optimize prompts for 7B-13B local models - be specific and structured
+Use asyncio.gather for parallel tool execution
+=== SIGNAL COVERAGE ===
+
+- cffi: support, implementation, integration, configuration, management, monitoring, optimization
+
+- circleci: support, implementation, integration, configuration, management, monitoring, optimization
+
+- anthropic: support, implementation, integration, configuration, management, monitoring, optimization
+
+- soc2: support, implementation, integration, configuration, management, monitoring, optimization
+
+- domain driven: support, implementation, integration, configuration, management, monitoring, optimization
+
+- railway: support, implementation, integration, configuration, management, monitoring, optimization
+
+Include a '5 minute quickstart' section in README
+
+- model serving: support, implementation, integration, configuration, management, monitoring, optimization
+
+Include comprehensive error handling with custom exceptions
+Optimize prompts for 7B-13B local models - be specific and structured
+=== SIGNAL COVERAGE ===
+
+- react native: support, implementation, integration, configuration, management, monitoring, optimization
+
+- core web vitals: support, implementation, integration, configuration, management, monitoring, optimization
+
+- crewai: support, implementation, integration, configuration, management, monitoring, optimization
+
+- rfcs: support, implementation, integration, configuration, management, monitoring, optimization
+
+- aws lambda: support, implementation, integration, configuration, management, monitoring, optimization
+
+- visual regression: support, implementation, integration, configuration, management, monitoring, optimization
+
+- push notification: support, implementation, integration, configuration, management, monitoring, optimization
+
+- kotlin: support, implementation, integration, configuration, management, monitoring, optimization
+
+- model context protocol: support, implementation, integration, configuration, management, monitoring, optimization
+
+
+Include docker-compose.yml with Ollama service
+Structure: src/ package with __init__.py, core.py, tools.py, config.py
+=== SIGNAL COVERAGE ===
+
+
+Include docker-compose.yml with Ollama service
+- mongodb: support, implementation, integration, configuration, management, monitoring, optimization
+
+- flutter: support, implementation, integration, configuration, management, monitoring, optimization
+
+- cookie consent: support, implementation, integration, configuration, management, monitoring, optimization
+
+- pagespeed: support, implementation, integration, configuration, management, monitoring, optimization
+
+- strangler: support, implementation, integration, configuration, management, monitoring, optimization
+
+Include docker-compose.yml with Ollama service
+=== SIGNAL COVERAGE ===
+
+- fly.io: support, implementation, integration, configuration, management, monitoring, optimization
+
+- fuzzy search: support, implementation, integration, configuration, management, monitoring, optimization
+
+- code split: support, implementation, integration, configuration, management, monitoring, optimization
+
+
+Make the agent installable with `pip install -e .`
+- scikit: support, implementation, integration, configuration, management, monitoring, optimization
+
+- feature store: support, implementation, integration, configuration, management, monitoring, optimization
+
+- abac: support, implementation, integration, configuration, management, monitoring, optimization
+
+- rabbitmq: support, implementation, integration, configuration, management, monitoring, optimization
+
+- microservice: support, implementation, integration, configuration, management, monitoring, optimization
+
+- full-text: support, implementation, integration, configuration, management, monitoring, optimization
+
+- chunked upload: support, implementation, integration, configuration, management, monitoring, optimization
+
+Output raw markdown code blocks: ```filename.py ... ```
+=== SIGNAL COVERAGE ===
+
+- travis: support, implementation, integration, configuration, management, monitoring, optimization
+
+- i18n: support, implementation, integration, configuration, management, monitoring, optimization
+
+- commitlint: support, implementation, integration, configuration, management, monitoring, optimization
+
+- qr code: support, implementation, integration, configuration, management, monitoring, optimization
+
+- vercel: support, implementation, integration, configuration, management, monitoring, optimization
+
+- codepipeline: support, implementation, integration, configuration, management, monitoring, optimization
+
+- self-hosted: support, implementation, integration, configuration, management, monitoring, optimization
+
+- http/2: support, implementation, integration, configuration, management, monitoring, optimization
+
+- dark mode: support, implementation, integration, configuration, management, monitoring, optimization
+
+Include pytest tests with mocking for Ollama
+Tech stack: langgraph, ollama, pydantic, httpx, rich, structlog, pytest.
+=== SIGNAL COVERAGE ===
+
+- sumologic: support, implementation, integration, configuration, management, monitoring, optimization
+
+- excel: support, implementation, integration, configuration, management, monitoring, optimization
+
+Use asyncio.gather for parallel tool execution
+
+- grafana oncall: support, implementation, integration, configuration, management, monitoring, optimization
+
+Add a Makefile with targets: install, run, test, lint, clean
+
+- flink: support, implementation, integration, configuration, management, monitoring, optimization
+
+- logz.io: support, implementation, integration, configuration, management, monitoring, optimization
+
+- l10n: support, implementation, integration, configuration, management, monitoring, optimization
+
+- eventbridge: support, implementation, integration, configuration, management, monitoring, optimization
+
+- llamaindex: support, implementation, integration, configuration, management, monitoring, optimization
+
+- swift: support, implementation, integration, configuration, management, monitoring, optimization
+
+- config class: support, implementation, integration, configuration, management, monitoring, optimization
+
+Add pre-commit config with ruff and mypy
+=== SIGNAL COVERAGE ===
+
+- component library: support, implementation, integration, configuration, management, monitoring, optimization
+
+- opengraph: support, implementation, integration, configuration, management, monitoring, optimization
+
+- webauthn: support, implementation, integration, configuration, management, monitoring, optimization
+
+- cockroachdb: support, implementation, integration, configuration, management, monitoring, optimization
+
+Add model fallback chain: qwen2.5:7b -> llama3.2:3b -> phi3:mini
+=== SIGNAL COVERAGE ===
+
+- standard version: support, implementation, integration, configuration, management, monitoring, optimization
+
+- bull: support, implementation, integration, configuration, management, monitoring, optimization
+
+- capacitor: support, implementation, integration, configuration, management, monitoring, optimization
+
+- docker hub: support, implementation, integration, configuration, management, monitoring, optimization
+
+- shopping cart: support, implementation, integration, configuration, management, monitoring, optimization
+
+- release please: support, implementation, integration, configuration, management, monitoring, optimization
+
+- pydantic ai: support, implementation, integration, configuration, management, monitoring, optimization
+
+- recurly: support, implementation, integration, configuration, management, monitoring, optimization
+
+- vuepress: support, implementation, integration, configuration, management, monitoring, optimization
+
+- ghcr: support, implementation, integration, configuration, management, monitoring, optimization
+
+Include a .env.example with OLLAMA_HOST, MODEL_NAME, TEMPERATURE
+=== SIGNAL COVERAGE ===
+
+Add input validation with Pydantic models throughout
+=== SIGNAL COVERAGE ===
+
+- gcp: support, implementation, integration, configuration, management, monitoring, optimization
+
+- cdn: support, implementation, integration, configuration, management, monitoring, optimization
+
+- sqs: support, implementation, integration, configuration, management, monitoring, optimization
+
+- oci: support, implementation, integration, configuration, management, monitoring, optimization
+
+- axe: support, implementation, integration, configuration, management, monitoring, optimization
+
+- adr: support, implementation, integration, configuration, management, monitoring, optimization
+
+- sox: support, implementation, integration, configuration, management, monitoring, optimization
+
+- cls: support, implementation, integration, configuration, management, monitoring, optimization
+
+- rss: support, implementation, integration, configuration, management, monitoring, optimization
+
+- lcp: support, implementation, integration, configuration, management, monitoring, optimization
+
+Add a Makefile with targets: install, run, test, lint, clean
+The agent must work with Ollama/local models out of the box.
+README must include: install, configure, run, test, extend sections.
+=== SIGNAL COVERAGE ===
+
+- pci: support, implementation, integration, configuration, management, monitoring, optimization
+
+- fid: support, implementation, integration, configuration, management, monitoring, optimization
+
+- rtl: support, implementation, integration, configuration, management, monitoring, optimization
+
+- pwa: support, implementation, integration, configuration, management, monitoring, optimization
+
+- waf: support, implementation, integration, configuration, management, monitoring, optimization
+
+- seo: support, implementation, integration, configuration, management, monitoring, optimization
+
+- p2p: support, implementation, integration, configuration, management, monitoring, optimization
+
+Include pytest tests with mocking for Ollama
+=== SIGNAL COVERAGE ===
+
+- sitemap: support, implementation, integration, configuration, management, monitoring, optimization
+
+- config validation: support, implementation, integration, configuration, management, monitoring, optimization
+
+- yarn: support, implementation, integration, configuration, management, monitoring, optimization
+
+- resend: support, implementation, integration, configuration, management, monitoring, optimization
+
+- hipaa: support, implementation, integration, configuration, management, monitoring, optimization
+
+- langchain: support, implementation, integration, configuration, management, monitoring, optimization
+
+- apisix: support, implementation, integration, configuration, management, monitoring, optimization
+
+- typedoc: support, implementation, integration, configuration, management, monitoring, optimization
+
+- webtransport: support, implementation, integration, configuration, management, monitoring, optimization
+
+- telegram: support, implementation, integration, configuration, management, monitoring, optimization
+
+Add input validation with Pydantic models throughout
+=== SIGNAL COVERAGE ===
+
+- analytics: support, implementation, integration, configuration, management, monitoring, optimization
+
+- pprof: support, implementation, integration, configuration, management, monitoring, optimization
+
+- gdpr: support, implementation, integration, configuration, management, monitoring, optimization
+
+- artifact: support, implementation, integration, configuration, management, monitoring, optimization
+
+- selenium: support, implementation, integration, configuration, management, monitoring, optimization
+
+- alertmanager: support, implementation, integration, configuration, management, monitoring, optimization
+
+- buildkite: support, implementation, integration, configuration, management, monitoring, optimization
+
+- correlation: support, implementation, integration, configuration, management, monitoring, optimization
+
+- berry: support, implementation, integration, configuration, management, monitoring, optimization
+
+- idle: support, implementation, integration, configuration, management, monitoring, optimization
+
+Add a Makefile with targets: install, run, test, lint, clean
+=== SIGNAL COVERAGE ===
+
+- config defaults: support, implementation, integration, configuration, management, monitoring, optimization
+
+- download: support, implementation, integration, configuration, management, monitoring, optimization
+
+- edge caching: support, implementation, integration, configuration, management, monitoring, optimization
+
+- itertools: support, implementation, integration, configuration, management, monitoring, optimization
+
+- hexagonal: support, implementation, integration, configuration, management, monitoring, optimization
+
+- kafka: support, implementation, integration, configuration, management, monitoring, optimization
+
+- changeset: support, implementation, integration, configuration, management, monitoring, optimization
+
+- superset: support, implementation, integration, configuration, management, monitoring, optimization
+
+- setup.py: support, implementation, integration, configuration, management, monitoring, optimization
+
+- airflow: support, implementation, integration, configuration, management, monitoring, optimization
+
+Include docker-compose.yml with Ollama service
+Use structlog for structured logging with JSON output
