@@ -36,11 +36,9 @@ MUTATIONS: list[str] = [
 ]
 
 BENCHMARK_WEIGHTS: dict[str, float] = {
-    "flask_api": 1.0,
-    "cli_tool": 1.0,
-    "websocket_server": 1.2,
-    "data_processor": 0.8,
-    "math_library": 0.8,
+    "cli_task_manager": 1.0,
+    "async_web_scraper": 1.2,
+    "data_pipeline": 1.0,
 }
 
 

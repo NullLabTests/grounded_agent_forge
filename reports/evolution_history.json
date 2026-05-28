@@ -133,5 +133,140 @@
     "base_score": 41.0,
     "files_count": 3,
     "timestamp": "2026-05-28T16:50:27.830690+00:00"
+  },
+  {
+    "cycle": 15,
+    "generation": 15,
+    "benchmark": "cli_task_manager",
+    "total_score": 43.0,
+    "base_score": 30.0,
+    "files_count": 52,
+    "timestamp": "2026-05-28T16:54:21.955906+00:00"
+  },
+  {
+    "cycle": 16,
+    "generation": 16,
+    "benchmark": "async_web_scraper",
+    "total_score": 26.0,
+    "base_score": 15.0,
+    "files_count": 16,
+    "timestamp": "2026-05-28T16:55:28.030940+00:00"
+  },
+  {
+    "cycle": 17,
+    "generation": 17,
+    "benchmark": "cli_task_manager",
+    "total_score": 24.0,
+    "base_score": 15.0,
+    "files_count": 18,
+    "timestamp": "2026-05-28T16:56:02.028268+00:00"
+  },
+  {
+    "cycle": 18,
+    "generation": 18,
+    "benchmark": "cli_task_manager",
+    "total_score": 51.0,
+    "base_score": 33.0,
+    "files_count": 38,
+    "timestamp": "2026-05-28T16:57:47.493407+00:00"
+  },
+  {
+    "cycle": 19,
+    "generation": 19,
+    "benchmark": "cli_task_manager",
+    "total_score": 17.0,
+    "base_score": 12.0,
+    "files_count": 26,
+    "timestamp": "2026-05-28T16:59:25.359494+00:00"
+  },
+  {
+    "cycle": 20,
+    "generation": 20,
+    "benchmark": "cli_task_manager",
+    "total_score": 51.0,
+    "base_score": 33.0,
+    "files_count": 24,
+    "timestamp": "2026-05-28T17:00:40.097598+00:00"
+  },
+  {
+    "cycle": 21,
+    "generation": 21,
+    "benchmark": "async_web_scraper",
+    "total_score": 21.0,
+    "base_score": 13.0,
+    "files_count": 9,
+    "timestamp": "2026-05-28T17:02:23.521775+00:00"
+  },
+  {
+    "cycle": 22,
+    "generation": 22,
+    "benchmark": "async_web_scraper",
+    "total_score": 47.0,
+    "base_score": 33.0,
+    "files_count": 21,
+    "timestamp": "2026-05-28T17:03:04.975280+00:00"
+  },
+  {
+    "cycle": 23,
+    "generation": 23,
+    "benchmark": "cli_task_manager",
+    "total_score": 22.0,
+    "base_score": 12.0,
+    "files_count": 17,
+    "timestamp": "2026-05-28T17:03:53.838534+00:00"
+  },
+  {
+    "cycle": 24,
+    "generation": 24,
+    "benchmark": "cli_task_manager",
+    "total_score": 51.0,
+    "base_score": 33.0,
+    "files_count": 29,
+    "timestamp": "2026-05-28T17:05:50.588652+00:00"
+  },
+  {
+    "cycle": 25,
+    "generation": 25,
+    "benchmark": "data_pipeline",
+    "total_score": 49.0,
+    "base_score": 33.0,
+    "files_count": 43,
+    "timestamp": "2026-05-28T17:09:22.795362+00:00"
+  },
+  {
+    "cycle": 26,
+    "generation": 26,
+    "benchmark": "data_pipeline",
+    "total_score": 28.0,
+    "base_score": 15.0,
+    "files_count": 31,
+    "timestamp": "2026-05-28T17:12:15.259650+00:00"
+  },
+  {
+    "cycle": 27,
+    "generation": 27,
+    "benchmark": "async_web_scraper",
+    "total_score": 28.0,
+    "base_score": 15.0,
+    "files_count": 27,
+    "timestamp": "2026-05-28T17:13:36.489406+00:00"
+  },
+  {
+    "cycle": 28,
+    "generation": 28,
+    "benchmark": "cli_task_manager",
+    "total_score": 22.0,
+    "base_score": 12.0,
+    "files_count": 19,
+    "timestamp": "2026-05-28T17:14:25.895864+00:00"
+  },
+  {
+    "cycle": 29,
+    "generation": 29,
+    "benchmark": "async_web_scraper",
+    "total_score": 60.0,
+    "base_score": 45.0,
+    "files_count": 25,
+    "timestamp": "2026-05-28T17:15:44.358466+00:00"
   }
 ]
