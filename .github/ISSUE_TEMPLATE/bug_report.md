@@ -23,8 +23,9 @@ What should have happened.
 
 - OS: [e.g. Ubuntu 22.04, macOS 14]
 - Python version:
-- Ollama model (if applicable):
+- Docker version (if sandbox-related):
+- LLM model:
 
 ## Additional Context
 
-Any relevant logs from `results.log` or `reflection.md`.
+Any relevant logs from the forge population database or dashboard.

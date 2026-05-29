@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'results.log'
+      - 'forge_population.db'
 
 jobs:
   generate-badge:
@@ -15,23 +15,14 @@ jobs:
       - name: Extract best score
         id: extract-score
         run: |
-          BEST_SCORE=$(head -1 results.log | grep -oP '\d+\.\d+')
-          echo "score=$BEST_SCORE" >> $GITHUB_OUTPUT
+          echo "score=active" >> $GITHUB_OUTPUT
 
       - name: Create badge JSON
         run: |
-          echo '{"schemaVersion": 1, "label": "Best Score", "message": "${{ steps.extract-score.outputs.score }}", "color": "blue"}' > badge.json
+          echo '{"schemaVersion": 1, "label": "Status", "message": "evolving", "color": "green"}' > badge.json
 
       - name: Upload badge
         uses: actions/upload-artifact@v4
         with:
-          name: score-badge
+          name: status-badge
           path: badge.json
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
-          publish_branch: gh-pages
-          keep_files: true

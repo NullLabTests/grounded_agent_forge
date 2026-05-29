@@ -18,4 +18,4 @@ What else have you considered?
 
 ## Impact
 
-How would this improve prompt quality, score ceiling, or usability?
+How would this improve agent quality, evolution efficiency, or usability?

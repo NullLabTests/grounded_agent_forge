@@ -1,2 +1,11 @@
-# Default code owners for the repository
+# Default owners for the grounded_agent_forge repository
 * @NullLabTests
+
+# Core forge module
+/agent_forge/ @NullLabTests
+
+# Dashboard
+/dashboard/ @NullLabTests
+
+# CI/CD configuration
+/.github/ @NullLabTests

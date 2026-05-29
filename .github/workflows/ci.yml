@@ -19,6 +19,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install ruff
+      - run: ruff check agent_forge/ dashboard/ --ignore=E501,F821 --statistics
       - run: ruff check . --ignore=E501,F821 --statistics
 
   imports:
@@ -28,24 +29,40 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install openai
-      - name: Check all modules load
+      - run: pip install openai sqlalchemy fastapi uvicorn httpx rich python-dotenv
+      - name: Check forge modules parse
         run: |
-          for mod in generator population_manager mutation_engine; do
+          for mod in agent_forge; do
             echo "=== $mod ==="
             python -c "import $mod; print('OK')"
           done
-          for mod in evaluator.runtime_evaluator; do
-            echo "=== $mod ==="
-            python -c "import $mod; print('OK')"
-          done
-      - name: Check scripts parse (no-exec)
+      - name: Check dashboard parses
         run: |
-          for script in infinite_research_loop.py run_experiment.py beautify_readme.py \
-                        eval.py auto_evolve.py; do
-            echo "=== $script ==="
-            python -c "compile(open('$script').read(), '$script', 'exec'); print('syntax OK')"
-          done
+          python -c "
+import ast
+with open('dashboard/main.py') as f:
+    ast.parse(f.read())
+print('dashboard/main.py: syntax OK')
+"
+      - name: Check all modules parse (no-exec)
+        run: |
+          python -c "
+import ast, os
+scripts = ['run_forge_loop.sh']
+for f in os.listdir('.'):
+            if f.endswith('.py'):
+                scripts.append(f)
+for script in scripts:
+    if not os.path.isfile(script):
+        continue
+    try:
+        with open(script) as f:
+            ast.parse(f.read())
+        print(f'{script}: syntax OK')
+    except SyntaxError as e:
+        print(f'{script}: FAILED - {e}')
+        raise
+"
 
   experiment_design:
     runs-on: ubuntu-latest

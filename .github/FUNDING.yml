@@ -1,9 +1,12 @@
-# These are not yet configured.
-# Remove the `#` comments below to enable.
-#
-# github: # Replace with GitHub sponsors usernames
-# patreon: # Replace with Patreon username
-# open_collective: # Replace with Open Collective username
-# ko_fi: # Replace with Ko-fi username
-# tidelift: # Replace with Tidelift platform name
-# custom: # Replace with URLs
+# These are supported funding model platforms
+
+github: [NullLabTests]
+# patreon: # coming soon
+# open_collective: # coming soon
+# ko_fi: # coming soon
+# tidelift: # coming soon
+# community_bridge: # coming soon
+# liberapay: # coming soon
+# issuehunt: # coming soon
+# otechie: # coming soon
+# custom: # coming soon

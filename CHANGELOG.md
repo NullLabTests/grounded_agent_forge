@@ -1,6 +1,30 @@
 # Changelog
 
-All notable changes to Grounded Evolution will be documented in this file.
+All notable changes to Grounded Agent Forge will be documented in this file.
+
+## [1.0.0] - 2026-05-29
+
+### Added
+- ⚒️ Complete project rebrand from `grounded-evolution` to `grounded-agent-forge`
+- 🧬 `agent_forge/` module with full blueprint evolution architecture:
+  - `orchestrator.py` — Main evolution loop coordinator
+  - `agent_spec_generator.py` — Agent blueprint generation via LLM
+  - `full_agent_evaluator.py` — Multi-objective fitness evaluator (Docker sandbox)
+  - `meta_evolver.py` — Self-tuning evolution strategy adaptation
+- 📊 `dashboard/main.py` — Real-time evolution visualization (FastAPI)
+- 🐚 `run_forge_loop.sh` — Bash automation wrapper
+- 📝 Complete README with badges, lineage section, DeepSeek V4 credit, and architecture docs
+- 🔄 GitHub repository `NullLabTests/grounded_agent_forge` with 10 topics
+- 📋 Updated CI workflow covering forge modules
+- 🔧 Updated `.env.example` with DeepSeek defaults
+- 📦 Updated `pyproject.toml` with forge dependencies (sqlalchemy, fastapi, docker, httpx, rich)
+- 🤝 Updated CONTRIBUTING.md for forge project
+- 🔒 Updated SECURITY.md for forge project
+
+### Changed
+- Remote URL from `grounded_evolution` to `grounded_agent_forge`
+- Default LLM model from `mistral-large-latest` to `deepseek-chat`
+- Default LLM base URL from `api.mistral.ai` to `api.deepseek.com`
 
 ## [0.2.1] - 2026-05-28
 
