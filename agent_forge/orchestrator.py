@@ -172,7 +172,7 @@ class Orchestrator:
 
     async def _persist_state(self) -> None:
         """Save evolution state to the database."""
-        if not self._db_path:
+        if not self._db_path or not self._db_path.name:
             return
         self._db_path.parent.mkdir(parents=True, exist_ok=True)
         state = {
