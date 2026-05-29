@@ -1,4 +1,8 @@
-# Experiment Design
+# Experiment Design (Legacy — Grounded Evolution)
+
+> This document describes the experimental framework from the original `grounded_evolution`
+> project. The current project (`grounded_agent_forge`) has a new experiment design focused
+> on agent blueprint evolution. See [README.md](../README.md#research-context) for current context.
 
 This document describes the experimental framework for studying execution-grounded
 prompt evolution. The goal is to move from a research prototype to a reproducible

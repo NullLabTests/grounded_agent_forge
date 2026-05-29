@@ -1,4 +1,8 @@
-# Architecture
+# Architecture (Legacy — Grounded Evolution)
+
+> This document describes the architecture of the original `grounded_evolution` project.
+> The current project (`grounded_agent_forge`) uses a new architecture centered on
+> `agent_forge/orchestrator.py`. See [README.md](../README.md#architecture) for the current design.
 
 ## High-Level Design
 

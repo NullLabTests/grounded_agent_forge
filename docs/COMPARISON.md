@@ -1,4 +1,8 @@
-# Comparison: Lexical-Only vs Execution-Grounded Evolution
+# Comparison: Lexical-Only vs Execution-Grounded Evolution (Legacy)
+
+> This document explains the key differences between the original `autoresearch-ai-agent-skeleton` and
+> `grounded_evolution` approaches. The current project (`grounded_agent_forge`) evolves full agent blueprints
+> rather than just prompts. See [README.md](../README.md#project-lineage) for the current comparison.
 
 This document explains the key differences between the original `autoresearch-ai-agent-skeleton` approach (lexical-only) and the Grounded Evolution approach (execution-grounded).
 

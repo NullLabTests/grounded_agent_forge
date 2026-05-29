@@ -1,31 +1,35 @@
-# Grounded Evolution — Roadmap
+# Grounded Agent Forge — Roadmap
 
-> **Status**: Alpha — single-node evolution loop operational.
+> **Status**: Pre-Alpha — scaffolding in place, core modules awaiting implementation.
 
 ---
 
-## Near-Term (v0.3 – v0.5)
+## Near-Term — v1.0 (Implementation Phase)
 
-- [ ] **Eval harness rewrite** — parameterized benchmarks so the score is meaningful across runs
-- [ ] **Population persistence v2** — SQLite backend instead of JSON for concurrent access
-- [ ] **Execution cost tracking** — log LLM tokens, wall time, and per-cycle cost to enable regression-aware pruning
-- [ ] **Prompt diversity enforcement** — deduplicate near-identical prompts before insertion
-- [ ] **Multi-provider LLM support** — graceful fallback if one provider is rate-limited
-- [ ] **Explicit mutation hyper-parameters** — expose mutation rate, crossover rate, tournament size as CLI/env overrides
-- [ ] **Regressions tests in CI** — run `evaluator/` suite on every PR
+- [ ] **Implement `orchestrator.py`** — evolution loop with selection, mutation, parallel generation
+- [ ] **Implement `agent_spec_generator.py`** — LLM-based agent blueprint generation with structured output
+- [ ] **Implement `full_agent_evaluator.py`** — Docker sandbox multi-objective fitness evaluator
+- [ ] **Implement `meta_evolver.py`** — self-tuning mutation weights and strategy adaptation
+- [ ] **Implement `dashboard/main.py`** — FastAPI-based real-time evolution visualization
+- [ ] **Implement `run_forge_loop.sh`** — full automation wrapper with env validation
+- [ ] **Blueprints registry** — SQLite-backed population persistence (FORGE_DB_URL)
+- [ ] **CI integration** — automated forge module tests in GitHub Actions
 
-## Medium-Term (v0.6 – v1.0)
+## Medium-Term — v1.1 – v2.0
 
-- [ ] **Parallel generation** — generate + evaluate multiple child prompts per cycle
-- [ ] **Archive of generated projects** — retain every project artifact, not just the latest
-- [ ] **Prompt migration** — keep a rolling window of high-scoring prompts; archive the rest
-- [ ] **Human-in-the-loop** — optional approval gate before mutation is applied
-- [ ] **Dashboard** — simple web UI for monitoring cycles, viewing generated projects, comparing scores
-- [ ] **Git-based experiment tracking** — tag each commit with cycle metadata for reproducibility
+- [ ] **Task specialization** — population naturally diversifies into domain-specific agent archetypes
+- [ ] **Multi-provider LLM support** — graceful fallback across providers
+- [ ] **Agent archive** — retain every generated agent blueprint for analysis
+- [ ] **Human-in-the-loop** — optional approval gate before agent execution
+- [ ] **Benchmark suite expansion** — 20+ diverse agent tasks
+- [ ] **Agent tournament** — head-to-head agent evaluation brackets
+- [ ] **Git-based experiment tracking** — tag each cycle with full metadata
 
-## Long-Term (v1.0+)
+## Long-Term — v2.0+
 
-- [ ] **Distributed evolution** — multiple agents running on different machines, sharing a common population DB
-- [ ] **Cross-domain benchmarks** — evolve prompts for code, documentation YAML, SQL, shell scripts
-- [ ] **Automated meta-parameter tuning** — treat mutation rate / temperature / selection pressure as evolvable parameters
-- [ ] **LLM fine-tuning loop** — fine-tune a small adapter using high-scoring prompts as training data
+- [ ] **Distributed evolution** — multiple forge instances sharing a population DB
+- [ ] **Cross-domain agents** — evolve agents for code, data analysis, research, DevOps
+- [ ] **Automated meta-parameter tuning** — treat mutation rate, temperature, selection pressure as evolvable
+- [ ] **LLM fine-tuning loop** — fine-tune adapters using high-fitness agent blueprints as training data
+- [ ] **Emergent tool creation** — agents that design and build their own tools
+- [ ] **Published research** — paper with reproducible results and ablation studies
