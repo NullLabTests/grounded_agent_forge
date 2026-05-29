@@ -1,5 +1,5 @@
 # Core evolution system
-openai>=1.0.0          # LLM client (OpenAI-compatible: Mistral, Ollama, etc.)
+openai>=2.38.0          # LLM client (OpenAI-compatible: Mistral, Ollama, etc.)
 pytest>=7.0.0          # Test execution for generated code
 flake8>=6.0.0          # Linting for generated code
 
