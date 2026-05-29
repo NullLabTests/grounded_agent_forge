@@ -54,3 +54,10 @@ experiments/projects/*
 # Environment
 .env
 *.key
+
+# Forge runtime state
+memory/*.json
+forge_population.db
+
+# Dashboard
+__pycache__/

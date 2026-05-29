@@ -1,0 +1,36 @@
+# Git
+.git
+.gitignore
+.gitattributes
+.github
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+*.whl
+.venv/
+env/
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Environment
+.env
+*.key
+
+# Forge state (generated at runtime)
+memory/
+forge_population.db
+*.json
+
+# Legacy generated
+generated_projects/
+runtime_logs/
+experiments/projects/
