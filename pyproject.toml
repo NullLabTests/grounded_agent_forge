@@ -10,3 +10,21 @@ line-length = 120
 
 [tool.ruff.lint]
 ignore = ["E501", "F821"]
+
+# === FIXED FOR grounded_agent_forge ===
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["*"]
+exclude = ["grounded_agent_forge_backup*", "tests*", "__pycache__*", "archive*"]
+
+[project.optional-dependencies]
+forge = [
+    "sqlalchemy>=2.0",
+    "alembic",
+    "fastapi>=0.110",
+    "uvicorn[standard]",
+    "python-dotenv",
+    "docker>=7.0",
+    "httpx",
+    "rich>=13",
+]
