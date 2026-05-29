@@ -1,329 +1,160 @@
 <div align="center">
 
-# 🧬 Grounded Evolution
+# ⚒️ Grounded Agent Forge
 
-**Prompt evolution grounded in real code execution — not just keyword matching.**
+**Evolving full agent blueprints through execution-grounded genetic algorithms — not just prompts, but tools, memory, planning, and self-evaluation.**
 
-[![Status: Active](https://img.shields.io/badge/status-active-success?style=flat-square&logo=github)](https://github.com/NullLabTests/grounded_evolution)
+[![Status: Active](https://img.shields.io/badge/status-active-success?style=flat-square&logo=github)](https://github.com/NullLabTests/grounded_agent_forge)
 [![License: MIT](https://img.shields.io/badge/License-MIT-67ac09?style=flat-square)](LICENSE)
 [![Python 3.12+](https://img.shields.io/badge/Python-3.12%2B-007ec6?style=flat-square&logo=python&logoColor=white)](https://python.org)
-[![Generations](https://img.shields.io/badge/Generations-218-8b5cf6?style=flat-square)](#results)
-[![Best Score](https://img.shields.io/badge/Best%20Score-1000%2F1000-22c55e?style=flat-square)](#results)
-[![Population](https://img.shields.io/badge/Population-218%20prompts-f59e0b?style=flat-square)](#results)
+[![Docker](https://img.shields.io/badge/Docker-Sandboxed-2496ED?style=flat-square&logo=docker&logoColor=white)](#)
+[![Built With](https://img.shields.io/badge/Built%20With-DeepSeek%20V4-0A192F?style=flat-square&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDY0IDY0Ij48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMzIgMkMxNS40MzEgMiAyIDE1LjQzMSAyIDMyczEzLjQzMSAzMCAzMCAzMCAzMC0xMy40MzEgMzAtMzBTNDguNTY5IDIgMzIgMnptMCA1NkMxNy42NjMgNTggNiA0Ni4zMzcgNiAzMnMxMS42NjMtMjYgMjYtMjYgMjYgMTEuNjYzIDI2IDI2LTExLjY2MyAyNi0yNiAyNnoiLz48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMjIgMjNoMnYxOGgtMnpNMzYgMjNoMnYxOGgtMnoiLz48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMjYgMjhoMTJ2MkgyNnpNMjYgMzJoMTJ2MkgyNnoiLz48L3N2Zz4=&label=AI%20Model)](https://deepseek.com)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-8b5cf6?style=flat-square)](CONTRIBUTING.md)
+[![Research](https://img.shields.io/badge/Research-Evolutionary%20Optimization-ff6b6b?style=flat-square)](#research-context)
 
 [Overview](#overview) •
-[Why Grounded?](#why-grounded) •
+[Project Lineage](#project-lineage) •
 [Architecture](#architecture) •
 [Quick Start](#quick-start) •
-[Results](#results) •
+[Modules](#modules) •
 [Project Structure](#project-structure)
 
 ---
 
 </div>
 
-## Current Status
-
-<!-- EVOLUTION_STATUS_START -->
-
-> **Last Evolution Cycle:** 2026-05-28T21:29:06+00:00 UTC  
-> **Generations:** 203  
-> **Best Score:** 39.0  
-> **Population Size:** 50  
-> **Benchmarks:** 7  
-> **Test Quality:** 4–5 real assertions per cycle  
-
-<!-- EVOLUTION_STATUS_END -->
-
 ## Overview
 
-Grounded Evolution is an **autonomous prompt optimization platform** built on a simple premise:
+Grounded Agent Forge is the **next evolution** of execution-grounded prompt optimization. Where the original [grounded_evolution](https://github.com/NullLabTests/grounded_evolution) evolved text prompts to generate better code, **this project evolves complete agent blueprints** — full specifications for autonomous AI agents including system prompts, tool definitions, memory architectures, planning strategies, and self-evaluation mechanisms.
 
-> **A prompt is only as good as the code it actually produces.**
+### What Makes This Different
 
-Most prompt optimizers score prompts by **keyword matching** — checking whether certain words appear in the prompt text. This measures *what the prompt says*, not *what it generates*.
-
-Grounded Evolution does both — and the execution-grounded signal is what makes this fundamentally different.
-
-### Two Evaluation Loops in One System
-
-```
-┌────────────────────────────────────────────────────────────┐
-│                   GROUNDED EVOLUTION                       │
-│                                                            │
-│  ┌──────────────────────┐    ┌──────────────────────────┐  │
-│  │  LOOP 1: Lexical     │    │  LOOP 2: Execution       │  │
-│  │                      │    │                          │  │
-│  │  evaluate.py         │    │  generator.py            │  │
-│  │  400+ keyword checks │    │  LLM → actual project    │  │
-│  │  Scores prompt TEXT  │    │                          │  │
-│  │                      │    │  runtime_evaluator.py    │  │
-│  │  mutate.py           │    │  AST + pytest + flake8   │  │
-│  │  5 genetic strategies│    │  Scores GENERATED CODE   │  │
-│  │                      │    │                          │  │
-│  │  auto_evolve.py      │    │  infinite_research_loop  │  │
-│  │  Meta-evolution      │    │  Continuous evolution    │  │
-│  └──────────────────────┘    └──────────────────────────┘  │
-└────────────────────────────────────────────────────────────┘
-```
+- **Agent-Level Evolution** — Not just prompts, but entire agent architectures evolve through genetic algorithms
+- **Docker Sandboxing** — Every generated agent is executed in an isolated container; real execution metrics drive the fitness function
+- **Multi-Objective Fitness** — Agents are scored on correctness, efficiency, tool-use accuracy, planning depth, and self-evaluation quality
+- **Meta-Evolution** — The evolutionary strategy itself evolves: crossover rates, mutation operators, and selection pressure adapt over time
+- **Task Specialization** — Populations diversify into specialist agents for different problem domains
+- **Dashboard** — Real-time web dashboard to visualize evolution progress, agent scores, and population dynamics
 
 ---
 
-## Why Grounded?
-
-### The Problem with Pure Lexical Scoring
-
-The original `autoresearch-ai-agent-skeleton` system (and most prompt optimizers) works like this:
-
-```python
-# evaluate.py — checks if prompt TEXT contains keywords
-if "kubernetes" in prompt_text:
-    score += 2
-if "pytest" in prompt_text:
-    score += 2
-```
-
-This measures **signal coverage** — does the prompt *mention* the right things? But it cannot answer:
-
-- Does the prompt actually *produce* working code?
-- Does the generated project *compile*?
-- Do the *tests pass*?
-- Is the code *well-structured*?
-
-### Grounded Evolution Answers Those Questions
-
-The grounded loop actually **generates code from the prompt**, then validates it:
+## Project Lineage
 
 ```
-Prompt text
-    │
-    ▼
-generator.py ────► LLM (Mistral/OpenAI) ────► generated_project/
-    │                                                │
-    │                                      ┌─────────┴──────────┐
-    │                                      │  runtime_evaluator  │
-    │                                      │  ├── AST parse      │
-    │                                      │  ├── pytest         │
-    │                                      │  ├── flake8         │
-    │                                      │  └── structure      │
-    │                                      └─────────┬──────────┘
-    │                                                │
-    └──────────── Execution score feeds back ─────────┘
+┌──────────────────────────────────────────────────────────────┐
+│                  grounded_agent_forge (THIS)                  │
+│  Evolves full agent blueprints (prompt + tools + memory +    │
+│  planning + self-eval) in Docker sandbox with multi-objective │
+│  fitness, meta-evolution, and task specialization.            │
+└──────────────────────────────────────────────────────────────┘
+                              ▲
+                              │ builds on
+┌──────────────────────────────────────────────────────────────┐
+│                  grounded_evolution (ancestor)                 │
+│  Evolves text prompts with execution-grounded validation via  │
+│  AST parse, pytest, and flake8. Two-loop system: lexical +   │
+│  grounded. Achieved 203 cycles, best score 39/80.             │
+└──────────────────────────────────────────────────────────────┘
+                              ▲
+                              │ builds on
+┌──────────────────────────────────────────────────────────────┐
+│           autoresearch-ai-agent-skeleton (original)           │
+│  Lexical-only prompt evolution with 400+ keyword signals,     │
+│  5 genetic strategies, meta-signal injection.                 │
+└──────────────────────────────────────────────────────────────┘
 ```
 
-### Side-by-Side Comparison
+### Capability Comparison
 
-| Capability | Lexical-Only (original) | Grounded (this repo) |
-|------------|------------------------|---------------------|
-| **Evaluates prompt text** | ✅ 400+ keyword signals | ✅ Same 400+ signals |
-| **Generates code from prompt** | ❌ | ✅ LLM generates real project |
-| **Compiles generated code** | ❌ | ✅ AST syntax validation |
-| **Runs generated tests** | ❌ | ✅ pytest execution |
-| **Lints generated code** | ❌ | ✅ flake8 checks |
-| **Scores execution quality** | ❌ | ✅ 10 structural metrics |
-| **Continuous evolution** | ❌ (finite generations) | ✅ Infinite research loop |
-| **Auto-commits improvements** | ❌ | ✅ git auto-commit |
-| **Meta-evolution** | ✅ injects new signals | ✅ injects new signals |
-| **Reflection/analysis** | ✅ reflect.py | ✅ reflect.py |
-| **LLM Provider** | N/A | Mistral by default (configurable) |
+| Capability | Lexical-Only | Grounded Evolution | Grounded Agent Forge |
+|------------|:---:|:---:|:---:|
+| **Keyword prompt scoring** | ✅ 400+ signals | ✅ 400+ signals | ✅ 400+ signals |
+| **Execution-grounded validation** | ❌ | ✅ AST + pytest + flake8 | ✅ Full Docker sandbox |
+| **Evolves prompts** | ✅ | ✅ | ✅ |
+| **Evolves agent blueprints** | ❌ | ❌ | ✅ |
+| **Docker sandbox isolation** | ❌ | ❌ | ✅ |
+| **Multi-objective fitness** | ❌ | ❌ | ✅ (8+ fitness dimensions) |
+| **Meta-evolution** | ✅ signal injection | ✅ signal injection | ✅ full strategy evolution |
+| **Task specialization** | ❌ | ❌ | ✅ |
+| **Real-time dashboard** | ❌ | ❌ | ✅ |
+| **Self-evaluation in agents** | ❌ | ❌ | ✅ |
+| **Tool-use validation** | ❌ | ❌ | ✅ |
+| **Planning depth scoring** | ❌ | ❌ | ✅ |
+| **Infinite research loop** | ❌ (finite) | ✅ | ✅ |
+| **Auto-commit on improvement** | ❌ | ✅ | ✅ |
 
-### Dual Evaluation: Two Fitness Signals
-
-```
-Total Fitness = Lexical Score + Execution Score
-                     ↑                ↑
-              What the prompt     What the generated
-              mentions            code actually does
-```
-
-The lexical score (0–1000) estimates what a prompt *might* produce. The execution score (0–100) validates what it *actually* produces. Together, they prevent the system from optimizing for keyword coverage at the expense of real code quality.
+> **This project was built using DeepSeek V4 as the primary coding model.**
 
 ---
 
 ## Architecture
 
-### System Diagram
+### High-Level System Design
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    GROUNDED AGENT FORGE                          │
+│                                                                  │
+│  ┌─────────────────────┐    ┌────────────────────────────────┐   │
+│  │  orchetrator.py     │───▶│  agent_spec_generator.py       │   │
+│  │  Main evolution     │    │  Generates agent blueprints    │   │
+│  │  loop coordinator   │    │  from evolved specifications   │   │
+│  └──────────┬──────────┘    └──────────────┬─────────────────┘   │
+│             │                              │                     │
+│             ▼                              ▼                     │
+│  ┌─────────────────────┐    ┌────────────────────────────────┐   │
+│  │  full_agent_        │    │  Docker Sandbox                │   │
+│  │  evaluator.py       │───▶│  - Isolated execution env      │   │
+│  │  Multi-objective    │    │  - Tool-use validation         │   │
+│  │  fitness scoring    │    │  - Planning evaluation         │   │
+│  └──────────┬──────────┘    └────────────────────────────────┘   │
+│             │                                                     │
+│             ▼                                                     │
+│  ┌─────────────────────┐                                          │
+│  │  meta_evolver.py    │───▶ Self-tuning evolution strategy       │
+│  │  Strategy adaptation│                                          │
+│  └─────────────────────┘                                          │
+│                                                                  │
+│  ┌─────────────────────┐                                          │
+│  │  dashboard/         │───▶ Real-time evolution visualization   │
+│  │  main.py            │                                          │
+│  └─────────────────────┘                                          │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Evolution Cycle
 
 ```mermaid
 graph TB
-    subgraph Lexical["📝 Lexical Loop (evaluate.py)"]
-        L1["Population<br/>(150 prompts)"] --> L2["mutate.py<br/>5 genetic strategies"]
-        L2 --> L3["evaluate.py<br/>400+ keyword signals"]
-        L3 --> L4["reflect.py<br/>rank + persist"]
-        L4 --> L1
-        L4 -->|"meta-evolve"| L5["auto_evolve.py<br/>inject new signals"]
-        L5 --> L3
+    subgraph Forge["⚒️ Agent Forge Loop"]
+        A["Agent Blueprint<br/>Population"] --> B["orchestrator.py<br/>Select + Mutate"]
+        B --> C["agent_spec_generator.py<br/>LLM → Full Agent Spec"]
+        C --> D["Docker Sandbox<br/>Build + Run Agent"]
+        D --> E["full_agent_evaluator.py<br/>Multi-Objective Score"]
+        E --> F["meta_evolver.py<br/>Tune Evolution Strategy"]
+        F --> G["Update Population<br/>+ Persist"]
+        G --> A
     end
 
-    subgraph Grounded["⚡ Execution Grounding Loop"]
-        G1["select_best(population)"] --> G2["mutation_engine.py<br/>mutate or crossover"]
-        G2 --> G3["generator.py<br/>LLM → project files"]
-        G3 --> G4["runtime_evaluator.py<br/>AST + pytest + flake8"]
-        G4 --> G5["Score execution<br/>& update population"]
-        G5 --> G1
+    subgraph Dashboard["📊 Real-Time Viz"]
+        DASH["dashboard/main.py"]
     end
 
-    Lexical -.->|champion prompt| Grounded
-    Grounded -.->|execution score| Lexical
+    E --> DASH
 ```
 
-### Evolution Cycle (Lexical)
+### Multi-Objective Fitness Dimensions
 
-```mermaid
-graph LR
-    P["🧬 150 prompts"] --> M["✂️ mutate.py"]
-    M --> E["📊 evaluate.py"]
-    E --> R["📝 reflect.py"]
-    R --> S["🏆 Select best"]
-    S --> P
-    S -->|meta| A["auto_evolve.py"]
-    A --> E
-```
-
-### Execution Cycle (Grounded)
-
-```mermaid
-graph LR
-    PROMPT["Best prompt"] --> GEN["generator.py"]
-    GEN --> RUN["runtime_evaluator.py"]
-    RUN --> SCORE["Execution metrics"]
-    SCORE --> POP["Update population"]
-    POP --> PROMPT
-```
-
-### Score Trajectory
-
-```mermaid
-xychart-beta
-    title "Lexical Score Evolution (Generations 1–150)"
-    x-axis ["Gen 1", "Gen 15", "Gen 30", "Gen 50", "Gen 75", "Gen 100", "Gen 125", "Gen 150"]
-    y-axis "Score" 0 --> 1000
-    bar [35, 196, 330, 422, 632, 740, 840, 862]
-    line [35, 196, 330, 422, 632, 740, 840, 862]
-```
-
----
-
-## Module Deep-Dive
-
-### Lexical Layer: `evaluate.py` (61 KB)
-
-400+ keyword-based quality signals across 19 categories. Each signal is a simple presence check:
-
-```python
-if "kubernetes" in content or "k8s" in content:
-    score += 2
-```
-
-| Category | Signals | Rewards |
-|----------|---------|---------|
-| Tech Stack | 14 | Ollama, LangGraph, Pydantic, httpx, Rich |
-| Quality | 30+ | type hints, error handling, async, streaming |
-| Security & Auth | 12 | encryption, RBAC, MFA, OAuth, JWT |
-| Performance | 8 | caching, pooling, circuit breaker |
-| Testing | 14 | integration, e2e, property-based, mutation |
-| Deployment & Ops | 16 | Docker, K8s, Terraform, Helm, ArgoCD |
-| ML/AI | 12 | RAG, embeddings, chain-of-thought, fine-tuning |
-| Data & Storage | 14 | SQL, NoSQL, Redis, migrations, ETL |
-| Cloud & IaC | 30+ | AWS, GCP, Azure, Terraform, Pulumi |
-| Compliance | 15+ | HIPAA, GDPR, SOC2, PCI DSS, ISO 27001 |
-| *Plus 9 more categories* | 200+ | Mobile, messaging, databases, design patterns... |
-
-### Grounded Layer: `runtime_evaluator.py` (184 lines)
-
-The execution-grounded validator. This is what makes the system *grounded* — it doesn't just check keywords, it **runs the code**:
-
-| Check | Max Score | What It Validates |
-|-------|-----------|-------------------|
-| **AST parse** | 20 | Every `.py` file is syntactically valid Python |
-| **Function count** | 5 | At least 1 function defined |
-| **Class count** | 5 | At least 1 class defined |
-| **pytest** | +25 / -5 | Tests pass; failures penalize |
-| **flake8** | 10 | PEP 8 compliance (select rules) |
-| **Runtime import** | 15 | `main.py` imports without errors |
-| **Has tests** | 5 | Test files present |
-| **Has README** | 2 | Documentation exists |
-| **Has requirements** | 3 | Dependencies declared |
-| **Multi-file** | 5 | 3+ files rewarded |
-
-### Generator: `generator.py` (235 lines)
-
-Connects to an LLM (Mistral by default) to generate real project files from prompts:
-
-```python
-# generator.py
-def generate_code(prompt):
-    response = client.chat.completions.create(
-        model=os.environ["LLM_MODEL"],
-        messages=[
-            {"role": "system", "content": "You are an autonomous software architect..."},
-            {"role": "user", "content": prompt},
-        ],
-    )
-    return response.choices[0].message.content
-```
-
-Also provides `write_project_files()` to parse multi-file code blocks and write them to disk for evaluation.
-
-### Infinite Research Loop: `infinite_research_loop.py` (187 lines)
-
-The continuous evolution loop that ties everything together:
-
-```
-Each cycle:
-1. Load population from population.json
-2. Select best prompt
-3. Mutate it (30% crossover chance)
-4. Pick a random benchmark task
-5. Generate code via LLM
-6. Write project files to disk
-7. Evaluate execution (AST, pytest, flake8)
-8. Score = base execution score + content bonus
-9. Update population
-10. Auto-update README status
-11. If score improved → git commit & push
-12. Wait 10 seconds, repeat
-```
-
-### Mutation Engine: `mutation_engine.py` (136 lines)
-
-39 mutation operations that transform prompts, with **self-tuning weights**:
-
-```python
-MUTATIONS = [
-    {"desc": "Add stronger modularity requirements", "weight": 1.0},
-    {"desc": "Require async support", "weight": 1.0},
-    {"desc": "Require comprehensive tests with pytest", "weight": 1.0},
-    # ... 36 more, weights auto-adjusted by success rate
-]
-```
-
-Mutations that consistently produce negative score deltas have their probability reduced (down to 0.1x). Successful mutations maintain or increase their weight. Weights persist to `memory/mutation_weights.json`.
-
-Also provides `crossover_prompts()` for genetic recombination between two prompts.
-
-### Population Manager: `population_manager.py` (50 lines)
-
-JSON-based population persistence with:
-- **Tournament selection** — random subset, pick best
-- **Elitism** — top-k selection
-- **Capped population** — keeps top 50 individuals
-- **Generation tracking** — each individual tagged with generation number
-
-### Meta-Evolution: `auto_evolve.py` / `evolve_forever.py`
-
-When prompts saturate the current scoring ceiling, these scripts inject entirely new scoring signals into `evaluate.py`:
-
-- `auto_evolve.py` — 10 signal pools (CI/CD, containers, databases, testing, etc.)
-- `evolve_forever.py` — 40+ signal pools (400+ signals across cloud, mobile, compliance, design patterns, etc.)
-
-### Reflection: `reflect.py` (270 lines)
-
-After each generation, ranks all prompts and records:
-- Best/worst/average scores
-- Spread between 1st and 2nd place
-- Pattern observations (e.g., "Auth/security is differentiating top prompts")
+| Dimension | Weight | What It Measures |
+|-----------|--------|-----------------|
+| **Correctness** | 30% | Does the agent solve the task correctly? |
+| **Tool-Use Accuracy** | 15% | Does the agent call tools with valid arguments? |
+| **Planning Depth** | 15% | Does the agent decompose problems into steps? |
+| **Code Quality** | 10% | AST validity, structure, linting |
+| **Memory Effectiveness** | 10% | Does the agent use memory to maintain context? |
+| **Self-Evaluation** | 10% | Does the agent correctly assess its own outputs? |
+| **Efficiency** | 5% | Token efficiency, round-trips to completion |
+| **Prompt Quality** | 5% | Lexical signal coverage (legacy metric) |
 
 ---
 
@@ -332,281 +163,167 @@ After each generation, ranks all prompts and records:
 ### Prerequisites
 
 - **Python 3.12+**
-- **LLM API key** — Mistral, OpenAI, or any OpenAI-compatible provider
+- **Docker** (for sandboxed agent execution)
+- **LLM API key** — DeepSeek, OpenAI, or any OpenAI-compatible provider
 
 ### Setup
 
 ```bash
-git clone git@github.com:NullLabTests/grounded_evolution.git
-cd grounded_evolution
+git clone git@github.com:NullLabTests/grounded_agent_forge.git
+cd grounded_agent_forge
 
 python -m venv .venv && source .venv/bin/activate
-pip install openai pytest flake8 black rich gitpython psutil
 
-# Set your LLM provider (Mistral by default)
+# Install base dependencies
+pip install -e .
+
+# Install forge extras (Docker sandbox, dashboard, etc.)
+pip install -e ".[forge]"
+
+# Set your LLM provider
 export LLM_API_KEY='your_key_here'
-export LLM_MODEL="mistral-large-latest"        # or "gpt-4o", etc.
-export LLM_BASE_URL="https://api.mistral.ai/v1" # or OpenAI's URL
-
-# Or use OpenAI directly:
-# export OPENAI_API_KEY='your_key_here'
+export LLM_MODEL="deepseek-chat"             # or "gpt-4o", "mistral-large", etc.
+export LLM_BASE_URL="https://api.deepseek.com/v1"
 ```
 
-### Quick Lexical Evaluation
+### Run the Forge
 
 ```bash
-python eval.py          # Score the seed prompt
-python auto_evolve.py   # 25 generations of lexical evolution
+# Start the infinite agent evolution loop
+python -m agent_forge.orchestrator
+
+# Or use the shell wrapper
+bash run_forge_loop.sh
 ```
 
-### Execution-Grounded Evolution
+### Launch the Dashboard
 
 ```bash
-# Continuous evolution with real code validation
-python infinite_research_loop.py
+uvicorn dashboard.main:app --reload --port 8000
+# Open http://localhost:8000 in your browser
 ```
 
-This starts the infinite loop:
-1. Takes the best prompt from population
-2. Generates a real Python project via LLM
-3. Validates by compiling, testing, and linting
-4. Updates scores with execution results
-5. Auto-commits improvements to git
+### Configuration
 
-### Ablation Experiments
+Set these environment variables or add them to `.env`:
 
-```bash
-# Run the full experiment grid (4 ablations × 3 benchmarks)
-python run_experiment.py
-
-# Quick smoke test (10 cycles per condition)
-python run_experiment.py --quick
-
-# Preview what will run
-python run_experiment.py --list
-
-# Resume incomplete runs
-python run_experiment.py --resume
-```
-
-Results are logged to `experiments/run_log.jsonl` and per-condition files in `experiments/ablation_runs/`.
-
-### Visualize Convergence
-
-```bash
-# Plot from main experiment log
-python analysis/plot_convergence.py
-
-# Plot from ablation runs with rolling average
-python analysis/plot_convergence.py --ablation --rolling=5
-```
-
-Charts saved to `analysis/charts/`. Requires `matplotlib`.
-
-### Manual Evolution
-
-```bash
-# Edit the seed prompt
-$EDITOR prompt.txt
-
-# Score it
-python eval.py
-
-# Keep or revert
-git add prompt.txt && git commit -m "Score improved"
-# or
-git checkout prompt.txt
-```
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `LLM_API_KEY` | — | LLM provider API key |
+| `LLM_MODEL` | `deepseek-chat` | Model name |
+| `LLM_BASE_URL` | `https://api.deepseek.com/v1` | API endpoint |
+| `FORGE_DB_URL` | `sqlite+aiosqlite:///forge_population.db` | Population database |
+| `SANDBOX_TIMEOUT` | `300` | Docker sandbox timeout (seconds) |
+| `MAX_PARALLEL_GENERATIONS` | `3` | Concurrent agent generations |
+| `HUMAN_APPROVAL` | `false` | Require manual approval before execution |
+| `DASHBOARD_PORT` | `8000` | Dashboard server port |
 
 ---
 
-## Results
+## Modules
 
-### Grounded Evolution Results (203 Cycles)
+### `agent_forge/orchestrator.py`
 
-| Metric | Value |
-|--------|-------|
-| **Cycles** | 203 |
-| **Best Execution Score** | **39.0 / 80** |
-| **Score Range** | 17.0 → 39.0 |
-| **Average Score** | 30.9 |
-| **Test Quality** | 4–5 real assertions/cycle (after prompt fix) |
-| **Hidden Tests Passed** | 0 / 203 |
-| **Total LLM Tokens** | ~1,000,000 |
-| **Mutation Operators** | 127 uses |
-| **Crossover Operators** | 76 uses |
-| **Process Stability** | 100% (no crashes) |
+The central evolution loop coordinator. Responsible for:
+- Loading/persisting the agent blueprint population
+- Selection, crossover, and mutation scheduling
+- Parallel generation management
+- Fitness tracking and convergence detection
 
-### What We Learned
+### `agent_forge/agent_spec_generator.py`
 
-**1. Score plateau at 39/80** — Despite 203 cycles, the execution score never exceeded 39. The system converged to a fitness plateau. Prompts evolved to produce projects that pass basic structural checks (syntax, imports, file count) but consistently failed benchmark-specific behavioral tests. This suggests the mutation operators explore *prompt text similarity* space, not *functional correctness* space — and these are not the same.
+Generates full agent specifications from evolved blueprints. An agent spec includes:
+- **System prompt** — Core identity and behavior instructions
+- **Tool definitions** — Function schemas the agent can call
+- **Memory architecture** — Short-term, long-term, and working memory configuration
+- **Planning strategy** — Chain-of-thought, ReAct, or tree-of-thought config
+- **Self-evaluation criteria** — How the agent judges its own outputs
 
-**2. Test quality is directly controllable via prompt engineering** — The single most impactful change was improving the LLM system prompt from *"Generate clean code"* to *"Generate real tests with assertions, no placeholders"*. This moved test quality from 0 real assertions to 4–5 per cycle instantly. The generator system prompt is a critical lever.
+### `agent_forge/full_agent_evaluator.py`
 
-**3. Self-tuning mutation weights work but converge** — The weight adjustment system successfully downweighted 5 consistently harmful mutations to 0.1× probability. However, this also reduced exploration diversity — the same few mutations were repeatedly selected, narrowing the search space.
+Multi-objective fitness evaluator that:
+- Builds a Docker container from the agent spec
+- Executes the agent against benchmark tasks
+- Scores across 8+ fitness dimensions (correctness, tool-use, planning, etc.)
+- Logs detailed per-dimension metrics for analysis
+- Handles sandbox timeouts and failures gracefully
 
-**4. Hidden behavioral tests remain unsolved** — Across 203 cycles, not a single generated project passed benchmark-specific hidden tests. The generated code produces correct *structure* (right function signatures, right file layout) but not correct *behavior* (the functions don't actually work as specified). This is the fundamental open problem.
+### `agent_forge/meta_evolver.py`
 
-**5. LLM generation is reliable** — The Mistral API completed all 203 generations without a single failure. Average generation time was stable at ~60s/cycle.
+Evolution strategy optimizer that:
+- Tracks which mutation/crossover operators produce the best fitness gains
+- Adjusts operator probabilities in real-time (self-tuning weights)
+- Evolves the evolution strategy itself (meta-level adaptation)
+- Detects stagnation and introduces novelty-driven exploration
+- Persists strategy state across runs
 
-**6. Population converges without diversity preservation** — The greedy elitist selection (keep top 50) caused the population to converge to near-identical prompts producing 3-file projects. A diversity-preserving mechanism (e.g., novelty search or fitness sharing) is needed.
+### `dashboard/main.py`
 
-### Open Challenges
-
-| Challenge | Impact | Hypothesis |
-|-----------|--------|------------|
-| **Hidden test failure** | Blocks scores above 40 | Need behavioral validation mid-generation, not post-hoc |
-| **Population convergence** | Stagnation after ~50 cycles | Add novelty search or multi-objective optimization |
-| **Token cost** | ~5,000 tokens/cycle | Cache similar prompts, use cheaper models for pre-filtering |
-| **Mutation granularity** | Most mutations are neutral | Add structured mutations that modify specific prompt sections
-
----
-
-## Comparison: Why This Repo Exists
-
-The original `autoresearch-ai-agent-skeleton` pioneered the idea of evolving prompts with genetic algorithms and **lexical scoring**. It proved that prompts *could* be optimized algorithmically.
-
-Grounded Evolution extends that work by adding an entirely new dimension — **execution-grounded validation**. The prompt isn't just scored on what it *says*; it's scored on what the code it generates *actually does*.
-
-| Aspect | Lexical-Only | Grounded |
-|--------|-------------|----------|
-| **Prompt scoring** | Keyword presence in text | Keyword presence + real execution |
-| **Code generation** | None | LLM generates projects from prompts |
-| **Validation** | None | AST parse + pytest + flake8 |
-| **Evolution loop** | Finite generations | Continuous (infinite) |
-| **Fitness signal** | Text coverage | Text coverage + code quality |
-| **Meta-evolution** | Injects new keywords | Injects new keywords + auto-commit |
-| **Research question** | "What keywords make a good prompt?" | "What prompts produce code that actually works?" |
-
----
-
-## Customization
-
-### Adding Lexical Signals
-
-```python
-# evaluate.py
-if "your-keyword" in content:
-    score += 2
-```
-
-Or add to `SIGNAL_POOLS` in `auto_evolve.py` for automated meta-injection.
-
-### Adding Execution Checks
-
-```python
-# evaluator/runtime_evaluator.py — extend evaluate_project()
-if some_condition:
-    score += N
-    metrics["my_check"] = result
-```
-
-### Tuning Mutation Weights
-
-```python
-# mutate.py, line 130-133
-strategy = random.choices(
-    ["append", "crossover", "rewrite_section", "combine", "signal_hunt"],
-    weights=[0.2, 0.2, 0.15, 0.15, 0.3],
-)[0]
-```
-
-### Adding Benchmark Tasks
-
-```json
-// benchmarks/tasks.json
-[
-  {
-    "name": "my_benchmark",
-    "prompt": "Create a ..."
-  }
-]
-```
-
-### Changing the LLM Provider
-
-```bash
-export LLM_API_KEY='sk-...'
-export LLM_MODEL="gpt-4o"
-export LLM_BASE_URL="https://api.openai.com/v1"
-```
-
-Or use local models via Ollama:
-
-```bash
-export LLM_BASE_URL="http://localhost:11434/v1"
-export LLM_MODEL="qwen2.5:7b"
-export LLM_API_KEY="ollama"  # Ollama ignores the key
-```
+FastAPI-based web dashboard providing:
+- Real-time population visualization
+- Fitness trajectory charts
+- Agent blueprint comparison views
+- Per-dimension score breakdowns
+- Evolution control (pause/resume/manual trigger)
 
 ---
 
 ## Project Structure
 
 ```
-grounded_evolution/
+grounded_agent_forge/
 ├── README.md                       # This file
-├── CHANGELOG.md                    # Release history
-├── CONTRIBUTING.md                 # Contribution guide
-├── SECURITY.md                     # Security policy
 ├── LICENSE                         # MIT license
 ├── pyproject.toml                  # Project metadata
-├── program.md                      # Agent instructions
-├── prompt.txt                      # Seed prompt
+├── AGENTS.md                       # Agent collaboration conventions
+├── .env.example                    # Environment configuration template
 │
-├── evaluate.py                     # Lexical scoring (400+ signals)
-├── eval.py                         # Quick eval (30 signals)
-├── mutate.py                       # Genetic mutation (5 strategies)
-├── reflect.py                      # Generation analysis
-├── auto_evolve.py                  # Meta-evolution (10 pools)
-├── evolve_forever.py               # Aggressive meta-evolution (40+ pools)
+├── agent_forge/                    # Core forge modules
+│   ├── __init__.py
+│   ├── orchestrator.py             # Evolution loop coordinator
+│   ├── agent_spec_generator.py     # Agent blueprint generator
+│   ├── full_agent_evaluator.py     # Multi-objective fitness evaluator
+│   └── meta_evolver.py             # Strategy adaptation
 │
-├── generator.py                    # LLM code generation
-├── mutation_engine.py              # Prompt mutation operators
-├── population_manager.py           # Population persistence
-├── infinite_research_loop.py       # Continuous grounded evolution
-├── beautify_readme.py              # README status updater
-├── run_evolution.sh                # Bash automation
+├── dashboard/                      # Real-time web dashboard
+│   └── main.py                     # FastAPI app
 │
-├── evaluator/
-│   └── runtime_evaluator.py        # Execution validation
+├── run_forge_loop.sh               # Bash automation wrapper
 │
-├── benchmarks/
-│   └── tasks.json                  # Benchmark definitions
-│
-├── population/                     # 150 evolved prompts
-├── generated_projects/             # Generated code outputs
+├── .github/                        # CI and templates
+├── docs/                           # Documentation
+├── experiments/                    # Experiment outputs
+├── benchmarks/                     # Task definitions
+├── evaluator/                      # (legacy) Grounded evolution evaluator
+├── population/                     # (legacy) Evolved prompts
 ├── memory/                         # Evolution state
-├── reports/                        # Generated reports
-├── runtime_logs/                   # Execution logs
-├── reflection.md                   # Full evolution history
-│
-├── docs/
-│   ├── COMPARISON.md               # Lexical vs Grounded
-│   └── ARCHITECTURE.md             # Architecture docs
-│
-└── .github/
-    ├── workflows/                  # CI pipeline
-    └── ISSUE_TEMPLATE/             # Issue templates
+├── analysis/                       # Visualization scripts
+├── generator.py                    # (legacy) LLM code generation
+├── infinite_research_loop.py       # (legacy) Grounded evolution loop
+├── mutation_engine.py              # (legacy) Prompt mutation operators
+└── population_manager.py           # (legacy) Population persistence
 ```
+
+> **Note**: Modules marked "(legacy)" are carried forward from grounded_evolution. They remain functional but the primary development focus is on `agent_forge/`.
 
 ---
 
 ## Research Context
 
-Grounded Evolution is framed within **evolutionary software optimization research**:
+Grounded Agent Forge is framed within **evolutionary software optimization research**:
 
-- **Evaluator-grounded prompt evolution** — Fitness functions grounded in both lexical coverage and execution-based validation
-- **Autonomous experimentation infrastructure** — Continuous, unattended evolution cycles with meta-level adaptation
-- **Recursive benchmark optimization** — The evaluator evolves alongside the prompts, preventing fitness stagnation
-- **Execution-grounded fitness** — The core innovation: prompts are not just scored on what they say, but on what the code they generate actually does
+- **Blueprint-level evolution** — Moving from prompt text evolution to full agent architecture evolution
+- **Execution-grounded multi-objective fitness** — Real Docker sandbox execution across 8+ fitness dimensions
+- **Meta-evolutionary adaptation** — The evolutionary strategy itself evolves, preventing stagnation
+- **Task specialization** — Populations naturally diversify into domain-specific agent archetypes
+- **Self-evaluating agents** — Agents that can assess their own output quality are rewarded
 
 This is **not**:
 - A claim of AGI or sentience
 - A self-conscious or self-aware system
 - Runaway recursive self-improvement
 
-It is a well-scoped experimental system for studying how genetic algorithms can optimize prompts for code generation quality — with real execution validation.
+It is a well-scoped experimental system for studying how genetic algorithms can evolve complete agent architectures — with real execution validation in isolated sandboxes.
 
 ---
 
@@ -616,4 +333,6 @@ MIT — see [LICENSE](LICENSE).
 
 ## Credits
 
-Inspired by [Andrej Karpathy's `autoresearch`](https://github.com/karpathy/autoresearch). The original lexical evolution framework was developed as `autoresearch-ai-agent-skeleton`. Grounded Evolution adds execution-grounded validation and continuous autonomous experimentation.
+- **Predecessor**: [grounded_evolution](https://github.com/NullLabTests/grounded_evolution) — execution-grounded prompt evolution platform
+- **Original**: [autoresearch-ai-agent-skeleton](https://github.com/karpathy/autoresearch) — lexical prompt evolution (inspired by Andrej Karpathy's work)
+- **Built using**: DeepSeek V4 as the primary coding model for this project
