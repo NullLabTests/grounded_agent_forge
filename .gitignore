@@ -1,63 +1,23 @@
-# Python
+# Byte-compiled
 __pycache__/
 *.py[cod]
-*.egg-info/
-dist/
-build/
-*.egg
-.eggs/
-*.whl
+*$py.class
 
-# Virtual environments
+# Env
+.env
+.venv
 venv/
-.venv/
-env/
-.env/
 
-# IDE & editors
+# IDE
 .vscode/
 .idea/
 *.swp
-*.swo
-*~
+
+# OS
 .DS_Store
+Thumbs.db
 
-# Tests & coverage
-.pytest_cache/
-.coverage
-htmlcov/
-.coverage.*
-
-# Type checking
-.mypy_cache/
-.ruff_cache/
-
-# Project specific
-results.log
-*.db
-*.sqlite
-generated/
-# Generated outputs (ignore content, preserve directory structure)
-generated_projects/*
-!generated_projects/.gitkeep
-runtime_logs/*
-!runtime_logs/.gitkeep
-memory/*
-!memory/.gitkeep
-
-# Experiments
-experiments/projects/*
-!experiments/projects/.gitkeep
-# Track run_log.jsonl (it's structured experiment data)
-!experiments/run_log.jsonl
-
-# Environment
-.env
-*.key
-
-# Forge runtime state
-memory/*.json
-forge_population.db
-
-# Dashboard
-__pycache__/
+# Build
+dist/
+build/
+*.egg-info/
