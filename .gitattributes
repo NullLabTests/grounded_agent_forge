@@ -1,59 +1,10 @@
-# Auto-detect text files with proper line endings
+# Auto-detect text files and normalize line endings
 * text=auto
 
 # Python
 *.py text diff=python
-*.pyw text
-*.pyx text
-*.pxd text
-*.pxi text
 
-# Shell
-*.sh text eol=lf
-*.bash text eol=lf
-
-# Config
-*.yml text
-*.yaml text
-*.json text
-*.toml text
-*.ini text
-*.cfg text
-*.conf text
-
-# Docs
-*.md text diff=markdown
-*.rst text
-*.txt text
-
-# Git
-.gitattributes text
-.gitignore text
-
-# Docker
-Dockerfile text
-*.dockerfile text
-
-# Environment
-.env.example text
-.env.* text
-
-# Binaries and generated
-*.pyc binary
-*.pyo binary
-*.egg binary
-*.egg-info binary
-__pycache__ binary
-
-# DB files
-*.db binary
-*.sqlite binary
-*.sqlite3 binary
-
-# Images
+# Binary
 *.png binary
 *.jpg binary
-*.jpeg binary
-*.gif binary
-*.svg text
 *.ico binary
