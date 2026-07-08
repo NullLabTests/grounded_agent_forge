@@ -57,7 +57,6 @@ if __name__ == "__main__":
         else:
             beautify()
     else:
-        import glob
         txt_files = list(Path("population").glob("*.txt"))
         if txt_files:
             beautify(population_size=len(txt_files))

@@ -6,7 +6,6 @@ testing, security, documentation, and more. Max score: 100.
 """
 
 import os
-import re
 from datetime import datetime
 
 
@@ -73,7 +72,7 @@ def evaluate() -> float:
 
     print(f"Score: {score}/100")
     print(f"Prompt: {len(words)} words, {len(content)} chars")
-    print(f"Logged to results.log")
+    print("Logged to results.log")
     return score
 
 

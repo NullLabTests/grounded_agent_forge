@@ -91,7 +91,6 @@ def generate_code(prompt: str, model: str | None = None, temperature: float | No
 
 def _fallback_project(prompt: str) -> str:
     """Return a minimal but valid Python project when LLM generation fails."""
-    import hashlib
     project_slug: str = "generated_app"
     return (
         f"```{project_slug}/main.py\n"

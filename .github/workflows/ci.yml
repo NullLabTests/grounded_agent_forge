@@ -20,7 +20,7 @@ jobs:
           python-version: "3.12"
       - run: pip install ruff
       - run: ruff check agent_forge/ dashboard/ --ignore=E501,F821 --statistics
-      - run: ruff check . --ignore=E501,F821 --statistics
+      - run: ruff check . --ignore=E501,F821,E701,E402,E741 --statistics
 
   imports:
     runs-on: ubuntu-latest

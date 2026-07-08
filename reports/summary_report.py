@@ -102,10 +102,10 @@ def generate_report(entries: list[dict[str, Any]]) -> str:
 
     lines.append("## Metadata")
     lines.append("")
-    lines.append(f"- **Generated projects:** `generated_projects/`")
-    lines.append(f"- **Archives:** `experiments/projects/`")
-    lines.append(f"- **Mutation weights:** `memory/mutation_weights.json`")
-    lines.append(f"- **Population:** `population/population.json`")
+    lines.append("- **Generated projects:** `generated_projects/`")
+    lines.append("- **Archives:** `experiments/projects/`")
+    lines.append("- **Mutation weights:** `memory/mutation_weights.json`")
+    lines.append("- **Population:** `population/population.json`")
     lines.append("")
 
     return "\n".join(lines)

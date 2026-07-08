@@ -15,12 +15,9 @@ just text matching.
 """
 
 import ast
-import os
 import subprocess
-import json
 import sys
 import time
-import shutil
 from pathlib import Path
 from typing import Any
 

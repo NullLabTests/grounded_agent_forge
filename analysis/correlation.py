@@ -8,9 +8,7 @@ Requires LLM_API_KEY to be set for the --refresh mode.
 """
 
 import json
-import subprocess
 import sys
-import os
 from pathlib import Path
 from typing import Any
 

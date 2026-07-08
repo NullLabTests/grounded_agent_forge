@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """Aggressive auto-evolution: inject 100s of signals, keep champion at ceiling."""
-import os, re, sys, random, subprocess, time
-from datetime import datetime
+import os
+import re
+import sys
+import random
+import subprocess
+import time
 
 CYCLES = int(sys.argv[1]) if len(sys.argv) > 1 else 200
 INJECT_EVERY = 3
@@ -558,13 +562,13 @@ def inject_new_signals(count=SIGNALS_PER_INJECT):
     with open("evaluate.py") as f:
         content = f.read()
 
-    existing = get_existing_keywords()
+    get_existing_keywords()
     insert_marker = "scores[f] = round(min(1000.0, score), 1)"
 
     # Find signals not yet in the file
     available = []
     for code, desc in FLATTENED:
-        kw = code.split('"')[1].lower()
+        code.split('"')[1].lower()
         # Check if any keyword already exists
         parts = [p.strip('"') for p in re.findall(r'"([^"]+)"', code)]
         if not any(p.lower() in content.lower() for p in parts):
@@ -641,7 +645,7 @@ def main():
 
     with open("results.log") as f:
         first = f.readline()
-    best_score = first.split(":")[1].strip() if ":" in first else "?"
+    first.split(":")[1].strip() if ":" in first else "?"
 
     print(f"\n{'='*70}")
     print(f"EVOLUTION COMPLETE: {cycles_run} cycles, {pop_count} prompts")

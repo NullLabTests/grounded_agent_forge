@@ -2,8 +2,6 @@
 import os
 import re
 import subprocess
-import tempfile
-import shutil
 from pathlib import Path
 
 def evaluate_generated_project(project_path: str) -> float:

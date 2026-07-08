@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Auto-evolution loop: evaluate -> reflect -> mutate with fresh signals injected periodically."""
 import os
-import re
 import sys
 import random
 import subprocess

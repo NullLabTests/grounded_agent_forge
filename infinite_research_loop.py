@@ -12,7 +12,6 @@ by real code quality, not just keyword matching.
 """
 
 import json
-import os
 import random
 import subprocess
 import sys
