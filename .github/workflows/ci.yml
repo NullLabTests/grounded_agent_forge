@@ -38,21 +38,19 @@ jobs:
             python -c "import $mod; print('OK')"
           done
       - name: Check dashboard parses
-        run: |
-          python -c "
+        run: python -c "
 import ast
 with open('dashboard/main.py') as f:
     ast.parse(f.read())
 print('dashboard/main.py: syntax OK')
 "
       - name: Check all modules parse (no-exec)
-        run: |
-          python -c "
+        run: python -c "
 import ast, os
 scripts = ['run_forge_loop.sh']
 for f in os.listdir('.'):
-            if f.endswith('.py'):
-                scripts.append(f)
+    if f.endswith('.py'):
+        scripts.append(f)
 for script in scripts:
     if not os.path.isfile(script):
         continue
@@ -73,8 +71,7 @@ for script in scripts:
         with:
           python-version: "3.12"
       - name: Validate benchmarks/tasks.json
-        run: |
-          python3 -c "
+        run: python3 -c "
 import json
 with open('benchmarks/tasks.json') as f:
     tasks = json.load(f)
