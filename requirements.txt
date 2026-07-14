@@ -4,7 +4,7 @@ pytest>=7.0.0          # Test execution for generated code
 flake8>=6.0.0          # Linting for generated code
 
 # Development
-black>=23.0.0          # Code formatting
+black>=26.5.1          # Code formatting
 rich>=13.0.0           # Rich terminal output (used by generated code)
 gitpython>=3.1.0       # Git operations
 
