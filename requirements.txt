@@ -1,7 +1,7 @@
 # Core evolution system
 openai>=1.0.0          # LLM client (OpenAI-compatible: Mistral, Ollama, etc.)
 pytest>=7.0.0          # Test execution for generated code
-flake8>=6.0.0          # Linting for generated code
+flake8>=7.3.0          # Linting for generated code
 
 # Development
 black>=23.0.0          # Code formatting
